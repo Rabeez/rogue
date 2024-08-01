@@ -3,7 +3,7 @@ package assets
 import (
 	"embed"
 	"image"
-	_ "image/png"
+	_ "image/png" // Needed for PNG decoding, otherwise it panics
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"

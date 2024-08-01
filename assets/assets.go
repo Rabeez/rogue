@@ -17,9 +17,11 @@ var assets embed.FS
 
 var FontFaceSource = mustLoadFontFace("fonts/antiquity-print.ttf")
 
+// TODO: should TILE_SIZE be used here, or should these be manually resized to match?
 var PlayerSprite = mustLoadSprite("tiles/1bit_tile_pack/Tilesheets/tilesheet_1of2_transparent.png", 16, 20, 17)
 var EnemySprite = mustLoadSprite("tiles/1bit_tile_pack/Tilesheets/tilesheet_1of2_transparent.png", 16, 0, 0)
 
+// FIXME: there should be 4+1+4+2 walls
 var (
 	WallSprite_TopLeft = mustLoadImage(
 		"tiles/Ascii-wall-like tileset by GibberishDev/connected/connected-tile0.png",

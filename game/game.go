@@ -15,7 +15,7 @@ const (
 )
 
 var (
-	BACKGROUND_COLOR = color.RGBA{0x20, 0x20, 0x20, 0xff}
+	BACKGROUND_COLOR = color.RGBA{0x20, 0x25, 0x20, 0xff}
 )
 
 type Game struct {

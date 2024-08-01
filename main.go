@@ -7,6 +7,11 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
+const title = "Rogue"
+const WINDOW_FACTOR = 50
+const WINDOW_WIDTH = 16 * WINDOW_FACTOR
+const WINDOW_HEIGHT = 9 * WINDOW_FACTOR
+
 type Game struct{}
 
 func (g *Game) Update() error {
@@ -18,13 +23,15 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return 320, 240
+	return ebiten.WindowSize()
 }
 
 func main() {
-	ebiten.SetWindowSize(640, 480)
-	ebiten.SetWindowTitle("Hello, World!")
-	if err := ebiten.RunGame(&Game{}); err != nil {
+	ebiten.SetWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT)
+	ebiten.SetWindowTitle(title)
+	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
+	g := Game{}
+	if err := ebiten.RunGame(&g); err != nil {
 		log.Fatal(err)
 	}
 }

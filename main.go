@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -15,6 +16,8 @@ func main() {
 
 	g := game.NewGame()
 	if err := ebiten.RunGame(g); err != nil {
-		log.Fatal(err)
+		if !errors.Is(err, ebiten.Termination) {
+			log.Fatal(err)
+		}
 	}
 }

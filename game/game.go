@@ -45,6 +45,9 @@ func NewGame() *Game {
 func (g *Game) Update() error {
 
 	// keypresses + state update
+	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
+		return ebiten.Termination
+	}
 
 	// enemy AI
 

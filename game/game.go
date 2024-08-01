@@ -4,9 +4,6 @@ import (
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-
-	"github.com/Rabeez/rogue/assets"
 )
 
 const (
@@ -17,37 +14,36 @@ const (
 	WINDOW_HEIGHT = 9 * WINDOW_FACTOR * TILE_SIZE
 )
 
+var (
+	BACKGROUND_COLOR = color.RGBA{0x20, 0x20, 0x20, 0xff}
+)
+
 type Game struct {
-	player  *Player
-	enemies []*Enemy
-	walls   []*Wall
+	currentLevel *Level
 }
 
 func NewGame() *Game {
 
 	// wall layout from map file?
-	w := []*Wall{NewWall()}
 
 	// player initial location
-
 	// enemy initial locations
-
 	// interactables locations
 
 	g := &Game{
-		// player:  NewPlayer(),
-		// enemies: []*Enemy{},
-		walls: w,
+		currentLevel: NewLevel(1),
 	}
 	return g
 }
 
 func (g *Game) Update() error {
 
-	// keypresses + state update
 	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
 		return ebiten.Termination
 	}
+
+	g.currentLevel.Update()
+	// keypresses + state update
 
 	// enemy AI
 
@@ -63,18 +59,7 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	ebitenutil.DebugPrint(screen, "Hello, World!")
-
-	// draw background
-	screen.Fill(color.RGBA{0x20, 0x20, 0x20, 0xff})
-
-	// draw walls
-	for _, w := range g.walls {
-		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(w.X, w.Y)
-		screen.DrawImage(assets.WallTSprite, op)
-	}
-
+	g.currentLevel.Draw(screen)
 	// draw interactables (chests, items)
 
 	// draw enemies

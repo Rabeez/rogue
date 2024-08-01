@@ -7,10 +7,15 @@ import (
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
 //go:embed *
 var assets embed.FS
+
+// NOTE: The above embed will show error if there is an empty subdirectory in 'assets'. Just make a dummy file to get rid of it
+
+var FontFaceSource = mustLoadFontFace("fonts/antiquity-print.ttf")
 
 var PlayerSprite = mustLoadSprite("tiles/1bit_tile_pack/Tilesheets/tilesheet_1of2_transparent.png", 16, 20, 17)
 var EnemySprite = mustLoadSprite("tiles/1bit_tile_pack/Tilesheets/tilesheet_1of2_transparent.png", 16, 0, 0)
@@ -64,4 +69,18 @@ func mustLoadSprite(name string, sz, row, col int) *ebiten.Image {
 	x := col * sz
 	y := row * sz
 	return mustLoadImage(name).SubImage(image.Rect(x, y, x+sz, y+sz)).(*ebiten.Image)
+}
+
+func mustLoadFontFace(name string) *text.GoTextFaceSource {
+	f, err := assets.Open(name)
+	if err != nil {
+		log.Fatalf("Failed to open font: %v", name)
+	}
+	defer f.Close()
+
+	s, err := text.NewGoTextFaceSource(f)
+	if err != nil {
+		log.Fatalf("Failed to load font: %v", name)
+	}
+	return s
 }

@@ -6,3 +6,4 @@ Simple rougue-like / dungeon crawler game made with [Ebitengine](https://ebiteng
 
 https://crysoftware.itch.io/1bit-tile-pack
 https://gibbdev.itch.io/ascii-like-wall-tile-set
+https://ninjikin.itch.io/font-antiquity-script

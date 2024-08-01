@@ -1,4 +1,5 @@
 .DS_Store
 rogue
-assets/tiles/
+assets/
+!assets/assets.go
 scratch/

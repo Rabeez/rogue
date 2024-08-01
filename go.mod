@@ -1,4 +1,4 @@
-module rogue
+module github.com/Rabeez/rogue
 
 go 1.22.3
 

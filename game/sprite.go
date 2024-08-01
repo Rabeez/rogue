@@ -1,6 +1,7 @@
 package game
 
 import (
+	"image/color"
 	"log"
 	"math"
 
@@ -15,8 +16,16 @@ func make_speed(speed float64) float64 {
 }
 
 type Sprite struct {
-	X, Y float64
-	Img  *ebiten.Image
+	X, Y  float64
+	Img   *ebiten.Image
+	color color.Color
+}
+
+func (p *Sprite) Draw(screen *ebiten.Image) {
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(p.X, p.Y)
+	op.ColorScale.ScaleWithColor(p.color)
+	screen.DrawImage(p.Img, op)
 }
 
 type Player struct {
@@ -30,9 +39,10 @@ func NewPlayer(x, y float64) *Player {
 	return &Player{
 		speed: s,
 		Sprite: &Sprite{
-			X:   x,
-			Y:   y,
-			Img: assets.PlayerSprite,
+			X:     x,
+			Y:     y,
+			color: color.RGBA{0xff, 0xff, 0x00, 0xff},
+			Img:   assets.PlayerSprite,
 		},
 	}
 }
@@ -63,12 +73,6 @@ func (p *Player) Update() {
 	p.Y += deltaY
 }
 
-func (p *Player) Draw(screen *ebiten.Image) {
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(p.X, p.Y)
-	screen.DrawImage(p.Img, op)
-}
-
 type Enemy struct {
 	*Sprite
 }
@@ -76,17 +80,12 @@ type Enemy struct {
 func NewEnemy(x, y float64) *Enemy {
 	return &Enemy{
 		Sprite: &Sprite{
-			X:   x,
-			Y:   y,
-			Img: assets.EnemySprite,
+			X:     x,
+			Y:     y,
+			color: color.RGBA{0xaa, 0x20, 0x20, 0xff},
+			Img:   assets.EnemySprite,
 		},
 	}
-}
-
-func (e *Enemy) Draw(screen *ebiten.Image) {
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(e.X, e.Y)
-	screen.DrawImage(e.Img, op)
 }
 
 type WallType int
@@ -109,96 +108,60 @@ type Wall struct {
 }
 
 func NewWall(x, y float64, wallType WallType) *Wall {
+	sp := &Sprite{
+		X:     x,
+		Y:     y,
+		color: color.White,
+		Img:   assets.WallSprite_TopLeft,
+	}
 	switch wallType {
 	case Wall_TopLeft:
 		return &Wall{
 			wallType: wallType,
-			Sprite: &Sprite{
-				X:   x,
-				Y:   y,
-				Img: assets.WallSprite_TopLeft,
-			},
+			Sprite:   sp,
 		}
 	case Wall_Top:
 		return &Wall{
 			wallType: wallType,
-			Sprite: &Sprite{
-				X:   x,
-				Y:   y,
-				Img: assets.WallSprite_Top,
-			},
+			Sprite:   sp,
 		}
 	case Wall_TopRight:
 		return &Wall{
 			wallType: wallType,
-			Sprite: &Sprite{
-				X:   x,
-				Y:   y,
-				Img: assets.WallSprite_TopRight,
-			},
+			Sprite:   sp,
 		}
 	case Wall_Left:
 		return &Wall{
 			wallType: wallType,
-			Sprite: &Sprite{
-				X:   x,
-				Y:   y,
-				Img: assets.WallSprite_Left,
-			},
+			Sprite:   sp,
 		}
 	case Wall_Middle:
 		return &Wall{
 			wallType: wallType,
-			Sprite: &Sprite{
-				X:   x,
-				Y:   y,
-				Img: assets.WallSprite_Middle,
-			},
+			Sprite:   sp,
 		}
 	case Wall_Right:
 		return &Wall{
 			wallType: wallType,
-			Sprite: &Sprite{
-				X:   x,
-				Y:   y,
-				Img: assets.WallSprite_Right,
-			},
+			Sprite:   sp,
 		}
 	case Wall_LowerLeft:
 		return &Wall{
 			wallType: wallType,
-			Sprite: &Sprite{
-				X:   x,
-				Y:   y,
-				Img: assets.WallSprite_LowerLeft,
-			},
+			Sprite:   sp,
 		}
 	case Wall_Lower:
 		return &Wall{
 			wallType: wallType,
-			Sprite: &Sprite{
-				X:   x,
-				Y:   y,
-				Img: assets.WallSprite_Lower,
-			},
+			Sprite:   sp,
 		}
 	case Wall_LowerRight:
 		return &Wall{
 			wallType: wallType,
-			Sprite: &Sprite{
-				X:   x,
-				Y:   y,
-				Img: assets.WallSprite_Right,
-			},
+			Sprite:   sp,
 		}
 	default:
 		log.Fatalf("Invalid wall type provided: %d", wallType)
 		return nil
 	}
-}
-
-func (w *Wall) Draw(screen *ebiten.Image) {
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(w.X, w.Y)
-	screen.DrawImage(w.Img, op)
 }

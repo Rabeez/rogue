@@ -67,8 +67,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// draw player
 
 	// draw UI
-	DrawText(screen, "hello", 300, 300, color.RGBA{200, 0, 0, 255}, 24)
-	DrawText(screen, "hello again", 500, 500, color.RGBA{10, 0, 100, 255}, 30)
+	PutText(screen, "hello", 300, 300, color.RGBA{200, 0, 0, 255}, 24)
+	PutText(screen, "hello again", 500, 500, color.RGBA{10, 0, 100, 255}, 30)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {

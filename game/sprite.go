@@ -16,12 +16,14 @@ func make_speed(speed float64) float64 {
 }
 
 type Sprite struct {
+	// Sprite coords are in grid coord space
 	X, Y  float64
 	Img   *ebiten.Image
 	color color.Color
 }
 
 func (p *Sprite) Draw(screen *ebiten.Image) {
+	// This method converts sprite grid coords to screen pixel coords for drawing
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(p.X, p.Y)
 	op.ColorScale.ScaleWithColor(p.color)

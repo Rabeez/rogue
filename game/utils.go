@@ -8,7 +8,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
-func DrawText(screen *ebiten.Image, s string, x, y float64, clr color.Color, sz float64) {
+func PutText(screen *ebiten.Image, s string, x, y float64, clr color.Color, sz float64) {
 	f := &text.GoTextFace{
 		Source: assets.FontFaceSource,
 		Size:   sz,
@@ -20,3 +20,7 @@ func DrawText(screen *ebiten.Image, s string, x, y float64, clr color.Color, sz 
 	op.ColorScale.ScaleWithColor(clr)
 	text.Draw(screen, s, f, op)
 }
+
+// TODO: PutRect(filled bool)
+
+// TODO: PutParticleEmitter(n int)

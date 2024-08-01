@@ -13,12 +13,12 @@ func NewLevel(level_num int) *Level {
 
 	// TODO: level gen
 	// separate method for generation? maybe different variants with different algos
-	// output should be a 2D array (maybe TileType enum?)
+	// algo will run in grid coords and return appropriate arrays to fill Level struct
 	// will need a camera type in game w/ 'zoom' level
 	// camera center will be on player and zoom will be num of tiles radius around
 	// will shift visible slice on player movement
 	// only render visible slice
-	// but simulaiton will run on whole 2d array
+	// but simulaiton will run on whole grid BBOX
 	// optim:
 	// keep bigger buffer around radius as off-screen render for smoother movement
 	// move the visible slice in separate goroutine in background for smoother movement without hitches?

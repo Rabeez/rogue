@@ -1,6 +1,7 @@
 package game
 
 import (
+	"fmt"
 	"log"
 	"strings"
 
@@ -19,6 +20,8 @@ func makeLevelFromMatrix(mat [][]string) *Level {
 	var p *Player
 	var e []*Enemy
 	var w []*Wall
+
+	fmt.Printf("Generating level from %vX%v matrix\n", len(mat[0]), len(mat))
 
 	for row, row_vals := range mat {
 		for col, cell_val := range row_vals {

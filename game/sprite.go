@@ -53,7 +53,7 @@ func NewPlayer(x, y int) *Player {
 	}
 }
 
-func (p *Player) Update() {
+func (p *Player) Update(walls []*Wall) {
 	var deltaX, deltaY float64
 	if ebiten.IsKeyPressed(ebiten.KeyUp) {
 		deltaY = -p.speed
@@ -75,8 +75,24 @@ func (p *Player) Update() {
 		deltaY *= factor
 	}
 
-	p.X += int(math.Round(deltaX))
-	p.Y += int(math.Round(deltaY))
+	// Check for wall collisions
+	// possibleCollisionCoords := [][]int{}
+	// for row_offset := -1; row_offset <= 1; row_offset++ {
+	// 	for col_offset := -1; col_offset <= 1; col_offset++ {
+	// 		possibleCollisionCoords = append(possibleCollisionCoords, []int{p.Y + row_offset, p.X + col_offset})
+	// 	}
+	// }
+	newX := p.X + int(math.Round(deltaX))
+	newY := p.Y + int(math.Round(deltaY))
+	for _, w := range walls {
+		if newY == w.Y && newX == w.X {
+			return
+		}
+	}
+
+	// Move
+	p.X = newX
+	p.Y = newY
 }
 
 type Enemy struct {

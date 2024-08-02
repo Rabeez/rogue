@@ -111,7 +111,7 @@ func (l *Level) Draw(screen *ebiten.Image) {
 }
 
 func (l *Level) Update() error {
-	l.Player.Update()
+	l.Player.Update(l.Walls)
 
 	return nil
 }

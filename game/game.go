@@ -67,6 +67,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// draw player
 
 	// draw UI
+	// TODO: square box on left for game
+	// use leftover space on right for 2 columns (?) for inventory and character etc
+	// aspect ratio should always be 16x9 for normal widescreen
+	// fullscreen should just stretch to fit biggest dimension (stretch -> increase TILE_SIZE?)
 	PutText(screen, "hello", 300, 300, color.RGBA{200, 0, 0, 255}, 24)
 	PutText(screen, "hello again", 500, 500, color.RGBA{10, 0, 100, 255}, 30)
 }

@@ -26,29 +26,35 @@ var (
 	WallSprite_TopLeft = mustLoadImage(
 		"tiles/Ascii-wall-like tileset by GibberishDev/connected/connected-tile0.png",
 	)
-	WallSprite_Top = mustLoadImage(
+	WallSprite_TopT = mustLoadImage(
 		"tiles/Ascii-wall-like tileset by GibberishDev/connected/connected-tile8.png",
 	)
 	WallSprite_TopRight = mustLoadImage(
 		"tiles/Ascii-wall-like tileset by GibberishDev/connected/connected-tile16.png",
 	)
-	WallSprite_Left = mustLoadImage(
+	WallSprite_LeftT = mustLoadImage(
 		"tiles/Ascii-wall-like tileset by GibberishDev/connected/connected-tile1.png",
 	)
 	WallSprite_Middle = mustLoadImage(
 		"tiles/Ascii-wall-like tileset by GibberishDev/connected/connected-tile9.png",
 	)
-	WallSprite_Right = mustLoadImage(
+	WallSprite_RightT = mustLoadImage(
 		"tiles/Ascii-wall-like tileset by GibberishDev/connected/connected-tile17.png",
 	)
 	WallSprite_LowerLeft = mustLoadImage(
 		"tiles/Ascii-wall-like tileset by GibberishDev/connected/connected-tile2.png",
 	)
-	WallSprite_Lower = mustLoadImage(
+	WallSprite_LowerT = mustLoadImage(
 		"tiles/Ascii-wall-like tileset by GibberishDev/connected/connected-tile10.png",
 	)
 	WallSprite_LowerRight = mustLoadImage(
 		"tiles/Ascii-wall-like tileset by GibberishDev/connected/connected-tile18.png",
+	)
+	WallSprite_Horz = mustLoadImage(
+		"tiles/Ascii-wall-like tileset by GibberishDev/connected/connected-tile57.png",
+	)
+	WallSprite_Vert = mustLoadImage(
+		"tiles/Ascii-wall-like tileset by GibberishDev/connected/connected-tile56.png",
 	)
 )
 

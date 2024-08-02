@@ -1,6 +1,12 @@
 package game
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"log"
+	"strings"
+
+	"github.com/Rabeez/rogue/data"
+	"github.com/hajimehoshi/ebiten/v2"
+)
 
 type Level struct {
 	LevelNum int
@@ -9,8 +15,60 @@ type Level struct {
 	Walls    []*Wall
 }
 
-func NewLevel(level_num int) *Level {
+func makeLevelFromMatrix(mat [][]string) *Level {
+	var p *Player
+	var e []*Enemy
+	var w []*Wall
 
+	for row, row_vals := range mat {
+		for col, cell_val := range row_vals {
+			vv := strings.Trim(cell_val, "\r\n ")
+			if len(vv) == 0 {
+				continue
+			}
+			switch vv {
+			case "ep":
+				p = NewPlayer(float64(col)*TILE_SIZE, float64(row)*TILE_SIZE)
+			case "ee":
+				e = append(e, NewEnemy(float64(col)*TILE_SIZE, float64(row)*TILE_SIZE))
+			case "tl":
+				w = append(w, NewWall(float64(col)*TILE_SIZE, float64(row)*TILE_SIZE, Wall_TopLeft))
+			case "tt":
+				w = append(w, NewWall(float64(col)*TILE_SIZE, float64(row)*TILE_SIZE, Wall_TopT))
+			case "tr":
+				w = append(w, NewWall(float64(col)*TILE_SIZE, float64(row)*TILE_SIZE, Wall_TopRight))
+			case "lt":
+				w = append(w, NewWall(float64(col)*TILE_SIZE, float64(row)*TILE_SIZE, Wall_LeftT))
+			case "m":
+				w = append(w, NewWall(float64(col)*TILE_SIZE, float64(row)*TILE_SIZE, Wall_Middle))
+			case "rt":
+				w = append(w, NewWall(float64(col)*TILE_SIZE, float64(row)*TILE_SIZE, Wall_RightT))
+			case "bl":
+				w = append(w, NewWall(float64(col)*TILE_SIZE, float64(row)*TILE_SIZE, Wall_LowerLeft))
+			case "bt":
+				w = append(w, NewWall(float64(col)*TILE_SIZE, float64(row)*TILE_SIZE, Wall_LowerT))
+			case "br":
+				w = append(w, NewWall(float64(col)*TILE_SIZE, float64(row)*TILE_SIZE, Wall_LowerRight))
+			case "h":
+				w = append(w, NewWall(float64(col)*TILE_SIZE, float64(row)*TILE_SIZE, Wall_Horz))
+			case "v":
+				w = append(w, NewWall(float64(col)*TILE_SIZE, float64(row)*TILE_SIZE, Wall_Vert))
+			default:
+				log.Fatalf("Invalid wall label found in level: '%v'", cell_val)
+			}
+		}
+	}
+
+	l := Level{
+		LevelNum: -1,
+		Player:   p,
+		Enemies:  e,
+		Walls:    w,
+	}
+	return &l
+}
+
+func NewLevel(level_num int) *Level {
 	// TODO: level gen
 	// separate method for generation? maybe different variants with different algos
 	// algo will run in grid coords and return appropriate arrays to fill Level struct
@@ -25,16 +83,19 @@ func NewLevel(level_num int) *Level {
 	// extra:
 	// (zoom will change on player speed -> potions etc or on enemy hit zoom in shake?)
 
-	w := []*Wall{NewWall(100, 0, Wall_TopLeft), NewWall(100, 300, Wall_Top)}
-	p := NewPlayer(100, 100)
-	e := []*Enemy{NewEnemy(200, 100), NewEnemy(200, 300)}
+	// w := []*Wall{NewWall(100, 0, Wall_TopLeft), NewWall(100, 300, Wall_Top)}
+	// p := NewPlayer(100, 100)
+	// e := []*Enemy{NewEnemy(200, 100), NewEnemy(200, 300)}
 
-	return &Level{
-		LevelNum: level_num,
-		Player:   p,
-		Enemies:  e,
-		Walls:    w,
-	}
+	// return &Level{
+	// 	LevelNum: level_num,
+	// 	Player:   p,
+	// 	Enemies:  e,
+	// 	Walls:    w,
+	// }
+
+	l := makeLevelFromMatrix(data.TestLevel)
+	return l
 }
 
 func (l *Level) Draw(screen *ebiten.Image) {

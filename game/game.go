@@ -39,6 +39,7 @@ func NewGame() *Game {
 func (g *Game) Update() error {
 
 	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
+		// TODO: pause game on escape and show menu with exit option instead
 		return ebiten.Termination
 	}
 

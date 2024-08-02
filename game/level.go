@@ -28,31 +28,31 @@ func makeLevelFromMatrix(mat [][]string) *Level {
 			}
 			switch vv {
 			case "ep":
-				p = NewPlayer(float64(col)*TILE_SIZE, float64(row)*TILE_SIZE)
+				p = NewPlayer(col, row)
 			case "ee":
-				e = append(e, NewEnemy(float64(col)*TILE_SIZE, float64(row)*TILE_SIZE))
+				e = append(e, NewEnemy(col, row))
 			case "tl":
-				w = append(w, NewWall(float64(col)*TILE_SIZE, float64(row)*TILE_SIZE, Wall_TopLeft))
+				w = append(w, NewWall(col, row, Wall_TopLeft))
 			case "tt":
-				w = append(w, NewWall(float64(col)*TILE_SIZE, float64(row)*TILE_SIZE, Wall_TopT))
+				w = append(w, NewWall(col, row, Wall_TopT))
 			case "tr":
-				w = append(w, NewWall(float64(col)*TILE_SIZE, float64(row)*TILE_SIZE, Wall_TopRight))
+				w = append(w, NewWall(col, row, Wall_TopRight))
 			case "lt":
-				w = append(w, NewWall(float64(col)*TILE_SIZE, float64(row)*TILE_SIZE, Wall_LeftT))
+				w = append(w, NewWall(col, row, Wall_LeftT))
 			case "m":
-				w = append(w, NewWall(float64(col)*TILE_SIZE, float64(row)*TILE_SIZE, Wall_Middle))
+				w = append(w, NewWall(col, row, Wall_Middle))
 			case "rt":
-				w = append(w, NewWall(float64(col)*TILE_SIZE, float64(row)*TILE_SIZE, Wall_RightT))
+				w = append(w, NewWall(col, row, Wall_RightT))
 			case "bl":
-				w = append(w, NewWall(float64(col)*TILE_SIZE, float64(row)*TILE_SIZE, Wall_LowerLeft))
+				w = append(w, NewWall(col, row, Wall_LowerLeft))
 			case "bt":
-				w = append(w, NewWall(float64(col)*TILE_SIZE, float64(row)*TILE_SIZE, Wall_LowerT))
+				w = append(w, NewWall(col, row, Wall_LowerT))
 			case "br":
-				w = append(w, NewWall(float64(col)*TILE_SIZE, float64(row)*TILE_SIZE, Wall_LowerRight))
+				w = append(w, NewWall(col, row, Wall_LowerRight))
 			case "h":
-				w = append(w, NewWall(float64(col)*TILE_SIZE, float64(row)*TILE_SIZE, Wall_Horz))
+				w = append(w, NewWall(col, row, Wall_Horz))
 			case "v":
-				w = append(w, NewWall(float64(col)*TILE_SIZE, float64(row)*TILE_SIZE, Wall_Vert))
+				w = append(w, NewWall(col, row, Wall_Vert))
 			default:
 				log.Fatalf("Invalid wall label found in level: '%v'", cell_val)
 			}

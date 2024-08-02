@@ -17,7 +17,7 @@ func make_speed(speed float64) float64 {
 
 type Sprite struct {
 	// Sprite coords are in grid coord space
-	X, Y  float64
+	X, Y  int
 	Img   *ebiten.Image
 	color color.Color
 }
@@ -25,7 +25,9 @@ type Sprite struct {
 func (p *Sprite) Draw(screen *ebiten.Image) {
 	// This method converts sprite grid coords to screen pixel coords for drawing
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(p.X, p.Y)
+	pixelX := float64(p.X * TILE_SIZE)
+	pixelY := float64(p.Y * TILE_SIZE)
+	op.GeoM.Translate(pixelX, pixelY)
 	op.ColorScale.ScaleWithColor(p.color)
 	screen.DrawImage(p.Img, op)
 }
@@ -35,9 +37,11 @@ type Player struct {
 	speed float64
 }
 
-func NewPlayer(x, y float64) *Player {
-	// Move 300 pixels per second
-	s := make_speed(30)
+func NewPlayer(x, y int) *Player {
+	s := 1.0 //make_speed(30)
+	if s < 1.0 {
+		log.Fatalf("Player speed too low: %v", s)
+	}
 	return &Player{
 		speed: s,
 		Sprite: &Sprite{
@@ -71,15 +75,15 @@ func (p *Player) Update() {
 		deltaY *= factor
 	}
 
-	p.X += deltaX
-	p.Y += deltaY
+	p.X += int(math.Round(deltaX))
+	p.Y += int(math.Round(deltaY))
 }
 
 type Enemy struct {
 	*Sprite
 }
 
-func NewEnemy(x, y float64) *Enemy {
+func NewEnemy(x, y int) *Enemy {
 	return &Enemy{
 		Sprite: &Sprite{
 			X:     x,
@@ -111,7 +115,7 @@ type Wall struct {
 	wallType WallType
 }
 
-func NewWall(x, y float64, wallType WallType) *Wall {
+func NewWall(x, y int, wallType WallType) *Wall {
 	sp := &Sprite{
 		X:     x,
 		Y:     y,

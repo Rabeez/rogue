@@ -94,14 +94,16 @@ type WallType int
 
 const (
 	Wall_TopLeft WallType = iota
-	Wall_Top
+	Wall_TopT
 	Wall_TopRight
-	Wall_Left
+	Wall_LeftT
 	Wall_Middle
-	Wall_Right
+	Wall_RightT
 	Wall_LowerLeft
-	Wall_Lower
+	Wall_LowerT
 	Wall_LowerRight
+	Wall_Horz
+	Wall_Vert
 )
 
 type Wall struct {
@@ -114,50 +116,71 @@ func NewWall(x, y float64, wallType WallType) *Wall {
 		X:     x,
 		Y:     y,
 		color: color.White,
-		Img:   assets.WallSprite_TopLeft,
+		Img:   nil,
 	}
 	switch wallType {
 	case Wall_TopLeft:
+		sp.Img = assets.WallSprite_TopLeft
 		return &Wall{
 			wallType: wallType,
 			Sprite:   sp,
 		}
-	case Wall_Top:
+	case Wall_TopT:
+		sp.Img = assets.WallSprite_TopT
 		return &Wall{
 			wallType: wallType,
 			Sprite:   sp,
 		}
 	case Wall_TopRight:
+		sp.Img = assets.WallSprite_TopRight
 		return &Wall{
 			wallType: wallType,
 			Sprite:   sp,
 		}
-	case Wall_Left:
+	case Wall_LeftT:
+		sp.Img = assets.WallSprite_LeftT
 		return &Wall{
 			wallType: wallType,
 			Sprite:   sp,
 		}
 	case Wall_Middle:
+		sp.Img = assets.WallSprite_Middle
 		return &Wall{
 			wallType: wallType,
 			Sprite:   sp,
 		}
-	case Wall_Right:
+	case Wall_RightT:
+		sp.Img = assets.WallSprite_RightT
 		return &Wall{
 			wallType: wallType,
 			Sprite:   sp,
 		}
 	case Wall_LowerLeft:
+		sp.Img = assets.WallSprite_LowerLeft
 		return &Wall{
 			wallType: wallType,
 			Sprite:   sp,
 		}
-	case Wall_Lower:
+	case Wall_LowerT:
+		sp.Img = assets.WallSprite_LowerT
 		return &Wall{
 			wallType: wallType,
 			Sprite:   sp,
 		}
 	case Wall_LowerRight:
+		sp.Img = assets.WallSprite_LowerRight
+		return &Wall{
+			wallType: wallType,
+			Sprite:   sp,
+		}
+	case Wall_Horz:
+		sp.Img = assets.WallSprite_Horz
+		return &Wall{
+			wallType: wallType,
+			Sprite:   sp,
+		}
+	case Wall_Vert:
+		sp.Img = assets.WallSprite_Vert
 		return &Wall{
 			wallType: wallType,
 			Sprite:   sp,

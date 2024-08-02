@@ -111,6 +111,7 @@ func (l *Level) Draw(screen *ebiten.Image) {
 }
 
 func (l *Level) Update() error {
+	// TODO: identify possible collision walls here based on player speed and only pass those into update
 	l.Player.Update(l.Walls)
 
 	return nil

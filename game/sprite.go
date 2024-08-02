@@ -54,6 +54,7 @@ func NewPlayer(x, y int) *Player {
 }
 
 func (p *Player) Update(walls []*Wall) {
+	// TODO: speed is too fast. maybe just fix it to grid cells and remove diagonal option
 	var deltaX, deltaY float64
 	if ebiten.IsKeyPressed(ebiten.KeyUp) {
 		deltaY = -p.speed

@@ -1,9 +1,11 @@
 package game
 
 import (
+	"fmt"
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 const (
@@ -74,6 +76,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// fullscreen should just stretch to fit biggest dimension (stretch -> increase TILE_SIZE?)
 	PutText(screen, "hello", 300, 300, color.RGBA{200, 0, 0, 255}, 24)
 	PutText(screen, "hello again", 500, 500, color.RGBA{10, 0, 100, 255}, 30)
+
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("%.0f", ebiten.ActualTPS()))
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {

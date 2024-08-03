@@ -6,6 +6,7 @@ import (
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 
 	"github.com/Rabeez/rogue/assets"
 )
@@ -28,6 +29,7 @@ func (p *Sprite) Draw(screen *ebiten.Image) {
 	pixelX := float64(p.X * TILE_SIZE)
 	pixelY := float64(p.Y * TILE_SIZE)
 	op.GeoM.Translate(pixelX, pixelY)
+	op.GeoM.Scale(2, 2)
 	op.ColorScale.ScaleWithColor(p.color)
 	screen.DrawImage(p.Img, op)
 }
@@ -40,7 +42,7 @@ type Player struct {
 func NewPlayer(x, y int) *Player {
 	s := 1.0 //make_speed(30)
 	if s < 1.0 {
-		log.Fatalf("Player speed too low: %v", s)
+		log.Fatalf("Player speed has to be >= 1.0: %v", s)
 	}
 	return &Player{
 		speed: s,
@@ -56,25 +58,23 @@ func NewPlayer(x, y int) *Player {
 func (p *Player) Update(walls []*Wall) {
 	// TODO: speed is too fast. maybe just fix it to grid cells and remove diagonal option
 	var deltaX, deltaY float64
-	if ebiten.IsKeyPressed(ebiten.KeyUp) {
+
+	if inpututil.IsKeyJustPressed(ebiten.KeyUp) {
 		deltaY = -p.speed
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyDown) {
+	} else if inpututil.IsKeyJustPressed(ebiten.KeyDown) {
 		deltaY = p.speed
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
+	} else if inpututil.IsKeyJustPressed(ebiten.KeyLeft) {
 		deltaX = -p.speed
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyRight) {
+	} else if inpututil.IsKeyJustPressed(ebiten.KeyRight) {
 		deltaX = p.speed
 	}
 
 	// Check for diagonal movement
-	if deltaX != 0 && deltaY != 0 {
-		factor := p.speed / math.Sqrt(deltaX*deltaX+deltaY*deltaY)
-		deltaX *= factor
-		deltaY *= factor
-	}
+	// if deltaX != 0 && deltaY != 0 {
+	// 	factor := p.speed / math.Sqrt(deltaX*deltaX+deltaY*deltaY)
+	// 	deltaX *= factor
+	// 	deltaY *= factor
+	// }
 
 	// Check for wall collisions
 	// possibleCollisionCoords := [][]int{}

@@ -108,8 +108,11 @@ func (e *Enemy) Update(p *Player, colliders *map[Vector2]bool) {
 		if d := e.Pos.ManDistance(*p.Pos); d <= e.aggroRadius {
 			// fmt.Println(d)
 			dir := p.Pos.Sub(*e.Pos).GridNormalize()
-			temp := e.Pos.Add(dir)
-			e.Pos = &temp
+			newPos := e.Pos.Add(dir)
+			// Wall collisions
+			if _, ok := (*colliders)[newPos]; !ok {
+				p.Pos = &newPos
+			}
 		}
 	}
 }

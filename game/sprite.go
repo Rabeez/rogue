@@ -13,7 +13,7 @@ import (
 
 type Sprite struct {
 	// Sprite coords are in grid coord space
-	X, Y  int
+	Pos   *Vector2
 	Img   *ebiten.Image
 	color color.Color
 }
@@ -21,8 +21,8 @@ type Sprite struct {
 func (p *Sprite) Draw(screen *ebiten.Image) {
 	// This method converts sprite grid coords to screen pixel coords for drawing
 	op := &ebiten.DrawImageOptions{}
-	pixelX := float64(p.X * TILE_SIZE)
-	pixelY := float64(p.Y * TILE_SIZE)
+	pixelX := float64(p.Pos.X * TILE_SIZE)
+	pixelY := float64(p.Pos.Y * TILE_SIZE)
 	op.GeoM.Translate(pixelX, pixelY)
 	op.GeoM.Scale(2, 2)
 	op.ColorScale.ScaleWithColor(p.color)
@@ -43,8 +43,7 @@ func NewPlayer(x, y int) *Player {
 	return &Player{
 		speed: s,
 		Sprite: &Sprite{
-			X:     x,
-			Y:     y,
+			Pos:   NewVector2(x, y),
 			color: color.RGBA{0xff, 0xff, 0x00, 0xff},
 			Img:   assets.PlayerSprite,
 		},
@@ -79,17 +78,15 @@ func (p *Player) Update(walls []*Wall) {
 	// 		possibleCollisionCoords = append(possibleCollisionCoords, []int{p.Y + row_offset, p.X + col_offset})
 	// 	}
 	// }
-	newX := p.X + int(math.Round(deltaX))
-	newY := p.Y + int(math.Round(deltaY))
+	newPos := p.Pos.Add(*NewVector2(int(math.Round(deltaX)), int(math.Round(deltaY))))
 	for _, w := range walls {
-		if newY == w.Y && newX == w.X {
+		if newPos.Eq(*w.Pos) {
 			return
 		}
 	}
 
 	// Move
-	p.X = newX
-	p.Y = newY
+	p.Pos = &newPos
 }
 
 type Enemy struct {
@@ -99,8 +96,7 @@ type Enemy struct {
 func NewEnemy(x, y int) *Enemy {
 	return &Enemy{
 		Sprite: &Sprite{
-			X:     x,
-			Y:     y,
+			Pos:   NewVector2(x, y),
 			color: color.RGBA{0xaa, 0x20, 0x20, 0xff},
 			Img:   assets.EnemySprite,
 		},
@@ -130,8 +126,7 @@ type Wall struct {
 
 func NewWall(x, y int, wallType WallType) *Wall {
 	sp := &Sprite{
-		X:     x,
-		Y:     y,
+		Pos:   NewVector2(x, y),
 		color: color.White,
 		Img:   nil,
 	}

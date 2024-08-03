@@ -17,15 +17,24 @@ type Sprite struct {
 	color color.Color
 }
 
-func (p *Sprite) Draw(screen *ebiten.Image) {
+func (p *Sprite) Draw(panel *Panel) {
 	// This method converts sprite grid coords to screen pixel coords for drawing
 	op := &ebiten.DrawImageOptions{}
 	pixelX := float64(p.Pos.X * TILE_SIZE)
 	pixelY := float64(p.Pos.Y * TILE_SIZE)
+
+	// Detect bounds and overflow drawing
+	w, h := p.Img.Bounds().Dx(), p.Img.Bounds().Dy()
+	if p.Pos.X+w > panel.Size.X || p.Pos.Y+h > panel.Size.Y {
+		log.Printf("Overflow drawing detected\n")
+	}
+
+	// Account for panel offset
+	op.GeoM.Translate(float64(panel.Corner.X), float64(panel.Corner.Y))
 	op.GeoM.Translate(pixelX, pixelY)
 	op.GeoM.Scale(2, 2)
 	op.ColorScale.ScaleWithColor(p.color)
-	screen.DrawImage(p.Img, op)
+	panel.Screen.DrawImage(p.Img, op)
 }
 
 type Player struct {

@@ -2,6 +2,7 @@ package game
 
 import (
 	"fmt"
+	"image"
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -9,11 +10,11 @@ import (
 )
 
 const (
-	TITLE         = "Rogue"
-	TILE_SIZE     = 16
-	WINDOW_FACTOR = 4
-	WINDOW_WIDTH  = 16 * WINDOW_FACTOR * TILE_SIZE
-	WINDOW_HEIGHT = 9 * WINDOW_FACTOR * TILE_SIZE
+	TITLE     = "Rogue"
+	TILE_SIZE = 16
+	// WINDOW_FACTOR = 4
+	WINDOW_WIDTH  = 80 * TILE_SIZE
+	WINDOW_HEIGHT = 50 * TILE_SIZE
 )
 
 var (
@@ -62,25 +63,20 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	// TODO: make separate boxes for different components
-	// square box on left for game
-	// use leftover space on right for 2 columns (?) for inventory and character etc
-	// aspect ratio should always be 16x9 for normal widescreen
-	// fullscreen should just stretch to fit biggest dimension (stretch -> increase TILE_SIZE?)
-	// only send game screen box to level Draw()
-	g.currentLevel.Draw(screen)
-	// draw interactables (chests, items)
+	// Setup canvases
+	gamePanel := NewPanel(0, 0, WINDOW_HEIGHT, WINDOW_HEIGHT, screen)
+	interfacePanel := NewPanel(WINDOW_HEIGHT, 0, WINDOW_WIDTH, WINDOW_HEIGHT, screen)
+	interfaceLeftPanel := interfacePanel.SubPanel(image.Rect(0, 0, 100, WINDOW_HEIGHT))
+	interfaceRightPanel := interfacePanel.SubPanel(image.Rect(100, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
 
-	// draw enemies
+	// Draw game level w/ entitites
+	g.currentLevel.Draw(gamePanel)
 
-	// draw player
+	// Draw UI
+	PutText(interfaceLeftPanel, "hello", 0, 0, color.RGBA{200, 0, 0, 255}, 24)
+	PutText(interfaceRightPanel, "hello again", 100, 100, color.RGBA{10, 0, 100, 255}, 30)
 
-	// draw UI
-	// only send UI screen box to UI Draw()
-	// also make the UI struct(?)
-	PutText(screen, "hello", 300, 300, color.RGBA{200, 0, 0, 255}, 24)
-	PutText(screen, "hello again", 500, 500, color.RGBA{10, 0, 100, 255}, 30)
-
+	// Debug info
 	ebitenutil.DebugPrint(screen, fmt.Sprintf("%.0f", ebiten.ActualTPS()))
 }
 

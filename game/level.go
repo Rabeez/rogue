@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/Rabeez/rogue/data"
-	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Level struct {
@@ -24,8 +23,8 @@ func makeLevelFromMatrix(mat [][]string) *Level {
 	var w []*Wall
 	c := make(map[Vector2]bool)
 
-	fmt.Printf("Generating level from %vX%v matrix\n", len(mat[0]), len(mat))
 	sz := NewVector2(len(mat[0]), len(mat))
+	fmt.Printf("Generating level from %vx%v matrix\n", sz.X, sz.Y)
 
 	for row, row_vals := range mat {
 		for col, cell_val := range row_vals {
@@ -118,16 +117,16 @@ func NewLevel(level_num int) *Level {
 	return l
 }
 
-func (l *Level) Draw(screen *ebiten.Image) {
-	screen.Fill(BACKGROUND_COLOR)
+func (l *Level) Draw(panel *Panel) {
+	panel.Screen.Fill(BACKGROUND_COLOR)
 
 	for _, w := range l.Walls {
-		w.Draw(screen)
+		w.Draw(panel)
 	}
 	for _, e := range l.Enemies {
-		e.Draw(screen)
+		e.Draw(panel)
 	}
-	l.Player.Draw(screen)
+	l.Player.Draw(panel)
 }
 
 func (l *Level) Update() error {

@@ -3,6 +3,7 @@ package game
 import (
 	"image/color"
 	"log"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -78,15 +79,38 @@ func (p *Player) Update(colliders *map[Vector2]bool) {
 
 type Enemy struct {
 	*Sprite
+	aggroRadius   int
+	movementTimer *Timer
 }
 
 func NewEnemy(x, y int) *Enemy {
+	ar := 3
+	if ar < 1 {
+		log.Fatalf("Enemy aggro radius has to be >= 1: %v", ar)
+	}
+
 	return &Enemy{
+		aggroRadius:   ar,
+		movementTimer: NewTimer(time.Millisecond * 200),
 		Sprite: &Sprite{
 			Pos:   NewVector2(x, y),
 			color: color.RGBA{0xaa, 0x20, 0x20, 0xff},
 			Img:   assets.EnemySprite,
 		},
+	}
+}
+
+func (e *Enemy) Update(p *Player, colliders *map[Vector2]bool) {
+	e.movementTimer.Update()
+
+	if e.movementTimer.IsReady() {
+		e.movementTimer.Reset()
+		if d := e.Pos.ManDistance(*p.Pos); d <= e.aggroRadius {
+			// fmt.Println(d)
+			dir := p.Pos.Sub(*e.Pos).GridNormalize()
+			temp := e.Pos.Add(dir)
+			e.Pos = &temp
+		}
 	}
 }
 

@@ -30,3 +30,17 @@ func PutText(panel *Panel, s string, x, y float64, clr color.Color, sz float64) 
 // TODO: PutRect(filled bool)
 
 // TODO: PutParticleEmitter(n int)
+
+func abs(a int) int {
+	if a >= 0 {
+		return a
+	}
+	return -a
+}
+
+func sign(a int) int {
+	if a >= 0 {
+		return 1
+	}
+	return -1
+}

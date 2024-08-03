@@ -11,11 +11,6 @@ import (
 	"github.com/Rabeez/rogue/assets"
 )
 
-func make_speed(speed float64) float64 {
-	// Convert speed in tiles-per-second to ticks-per-second
-	return speed * float64(TILE_SIZE) / float64(ebiten.TPS())
-}
-
 type Sprite struct {
 	// Sprite coords are in grid coord space
 	X, Y  int
@@ -40,7 +35,8 @@ type Player struct {
 }
 
 func NewPlayer(x, y int) *Player {
-	s := 1.0 //make_speed(30)
+	// speed is in units of cells
+	s := 1.0
 	if s < 1.0 {
 		log.Fatalf("Player speed has to be >= 1.0: %v", s)
 	}

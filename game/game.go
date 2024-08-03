@@ -85,5 +85,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
+	// Return hardcoded values and allow engine to redraw appropriatel
+	// https://ebitengine.org/en/blog/resizable.html
 	return WINDOW_WIDTH, WINDOW_HEIGHT
 }

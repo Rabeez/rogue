@@ -16,7 +16,7 @@ func PutText(panel *Panel, s string, x, y float64, clr color.Color, sz float64) 
 	// Detect bounds and overflow drawing
 	w, h := text.Measure(s, f, 0)
 	if x+w > float64(panel.Size.X) || y+h > float64(panel.Size.Y) {
-		log.Printf("Overflow drawing detected\n")
+		log.Fatalf("Overflow drawing detected\n")
 	}
 
 	op := &text.DrawOptions{}

@@ -26,7 +26,7 @@ func (p *Sprite) Draw(panel *Panel) {
 	// Detect bounds and overflow drawing
 	w, h := p.Img.Bounds().Dx(), p.Img.Bounds().Dy()
 	if p.Pos.X+w > panel.Size.X || p.Pos.Y+h > panel.Size.Y {
-		log.Printf("Overflow drawing detected\n")
+		log.Fatalf("Overflow drawing detected\n")
 	}
 
 	// Account for panel offset

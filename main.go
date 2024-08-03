@@ -13,7 +13,6 @@ func main() {
 	ebiten.SetWindowSize(game.WINDOW_WIDTH, game.WINDOW_HEIGHT)
 	ebiten.SetWindowTitle(game.TITLE)
 	ebiten.SetVsyncEnabled(true)
-	// ebiten.SetWindowResizingMode(ebiten.WindowResizingModeDisabled)
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
 	g := game.NewGame()

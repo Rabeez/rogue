@@ -3,7 +3,6 @@ package game
 import (
 	"image/color"
 	"log"
-	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -31,14 +30,14 @@ func (p *Sprite) Draw(screen *ebiten.Image) {
 
 type Player struct {
 	*Sprite
-	speed float64
+	speed int
 }
 
 func NewPlayer(x, y int) *Player {
 	// speed is in units of cells
-	s := 1.0
-	if s < 1.0 {
-		log.Fatalf("Player speed has to be >= 1.0: %v", s)
+	s := 1
+	if s < 1 {
+		log.Fatalf("Player speed has to be >= 1: %v", s)
 	}
 	return &Player{
 		speed: s,
@@ -50,41 +49,22 @@ func NewPlayer(x, y int) *Player {
 	}
 }
 
-func (p *Player) Update(walls []*Wall) {
-	var deltaX, deltaY float64
+func (p *Player) Update(colliders *map[Vector2]bool) {
+	deltaPos := NewVector2(0, 0)
 	if inpututil.IsKeyJustPressed(ebiten.KeyUp) {
-		deltaY = -p.speed
+		deltaPos.Y = -p.speed
 	} else if inpututil.IsKeyJustPressed(ebiten.KeyDown) {
-		deltaY = p.speed
+		deltaPos.Y = p.speed
 	} else if inpututil.IsKeyJustPressed(ebiten.KeyLeft) {
-		deltaX = -p.speed
+		deltaPos.X = -p.speed
 	} else if inpututil.IsKeyJustPressed(ebiten.KeyRight) {
-		deltaX = p.speed
+		deltaPos.X = p.speed
 	}
 
-	// Check for diagonal movement
-	// if deltaX != 0 && deltaY != 0 {
-	// 	factor := p.speed / math.Sqrt(deltaX*deltaX+deltaY*deltaY)
-	// 	deltaX *= factor
-	// 	deltaY *= factor
-	// }
-
-	// Check for wall collisions
-	// possibleCollisionCoords := [][]int{}
-	// for row_offset := -1; row_offset <= 1; row_offset++ {
-	// 	for col_offset := -1; col_offset <= 1; col_offset++ {
-	// 		possibleCollisionCoords = append(possibleCollisionCoords, []int{p.Y + row_offset, p.X + col_offset})
-	// 	}
-	// }
-	newPos := p.Pos.Add(*NewVector2(int(math.Round(deltaX)), int(math.Round(deltaY))))
-	for _, w := range walls {
-		if newPos.Eq(*w.Pos) {
-			return
-		}
+	newPos := p.Pos.Add(*deltaPos)
+	if _, ok := (*colliders)[newPos]; !ok {
+		p.Pos = &newPos
 	}
-
-	// Move
-	p.Pos = &newPos
 }
 
 type Enemy struct {

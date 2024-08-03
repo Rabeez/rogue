@@ -10,18 +10,22 @@ import (
 )
 
 type Level struct {
-	LevelNum int
-	Player   *Player
-	Enemies  []*Enemy
-	Walls    []*Wall
+	LevelNum  int
+	Size      Vector2
+	Player    *Player
+	Enemies   []*Enemy
+	Walls     []*Wall
+	Colliders map[Vector2]bool
 }
 
 func makeLevelFromMatrix(mat [][]string) *Level {
 	var p *Player
 	var e []*Enemy
 	var w []*Wall
+	c := make(map[Vector2]bool)
 
 	fmt.Printf("Generating level from %vX%v matrix\n", len(mat[0]), len(mat))
+	sz := NewVector2(len(mat[0]), len(mat))
 
 	for row, row_vals := range mat {
 		for col, cell_val := range row_vals {
@@ -36,26 +40,37 @@ func makeLevelFromMatrix(mat [][]string) *Level {
 				e = append(e, NewEnemy(col, row))
 			case "tl":
 				w = append(w, NewWall(col, row, Wall_TopLeft))
+				c[*NewVector2(col, row)] = true
 			case "tt":
 				w = append(w, NewWall(col, row, Wall_TopT))
+				c[*NewVector2(col, row)] = true
 			case "tr":
 				w = append(w, NewWall(col, row, Wall_TopRight))
+				c[*NewVector2(col, row)] = true
 			case "lt":
 				w = append(w, NewWall(col, row, Wall_LeftT))
+				c[*NewVector2(col, row)] = true
 			case "m":
 				w = append(w, NewWall(col, row, Wall_Middle))
+				c[*NewVector2(col, row)] = true
 			case "rt":
 				w = append(w, NewWall(col, row, Wall_RightT))
+				c[*NewVector2(col, row)] = true
 			case "bl":
 				w = append(w, NewWall(col, row, Wall_LowerLeft))
+				c[*NewVector2(col, row)] = true
 			case "bt":
 				w = append(w, NewWall(col, row, Wall_LowerT))
+				c[*NewVector2(col, row)] = true
 			case "br":
 				w = append(w, NewWall(col, row, Wall_LowerRight))
+				c[*NewVector2(col, row)] = true
 			case "h":
 				w = append(w, NewWall(col, row, Wall_Horz))
+				c[*NewVector2(col, row)] = true
 			case "v":
 				w = append(w, NewWall(col, row, Wall_Vert))
+				c[*NewVector2(col, row)] = true
 			default:
 				log.Fatalf("Invalid wall label found in level: '%v'", cell_val)
 			}
@@ -63,10 +78,12 @@ func makeLevelFromMatrix(mat [][]string) *Level {
 	}
 
 	l := Level{
-		LevelNum: -1,
-		Player:   p,
-		Enemies:  e,
-		Walls:    w,
+		LevelNum:  -1,
+		Size:      *sz,
+		Player:    p,
+		Enemies:   e,
+		Walls:     w,
+		Colliders: c,
 	}
 	return &l
 }
@@ -114,8 +131,7 @@ func (l *Level) Draw(screen *ebiten.Image) {
 }
 
 func (l *Level) Update() error {
-	// TODO: identify possible collision walls here based on player speed and only pass those into update
-	l.Player.Update(l.Walls)
+	l.Player.Update(&l.Colliders)
 
 	return nil
 }

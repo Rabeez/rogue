@@ -1,6 +1,6 @@
 # Rogue
 
-Simple rougue-like / dungeon crawler game made with [Ebitengine](https://ebitengine.org/) in Go. This is a personal learning project.
+Simple rougue-like / dungeon crawler game made with [Ebitengine](https://ebitengine.org/) in Go. This is a personal learning project. Some concepts are inspired by this [article](https://threedots.tech/post/making-games-in-go/).
 
 ## Assets
 

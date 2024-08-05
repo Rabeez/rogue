@@ -28,10 +28,6 @@ func PutText(panel *Panel, s string, x, y float64, clr color.Color, sz float64) 
 	text.Draw(panel.Screen, s, f, op)
 }
 
-// TODO: PutRect(filled bool)
-
-// TODO: PutParticleEmitter(n int)
-
 func abs(a int) int {
 	if a >= 0 {
 		return a

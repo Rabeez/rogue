@@ -256,7 +256,9 @@ func (e *Enemy) Draw(panel *Panel) {
 		}
 	} else {
 		if !e.attackTimer.IsReady() {
-			op.ColorScale.ScaleWithColor(NoireToColor(e.color.Shade(e.attackTimer.CurrentProgress())))
+			p := e.attackTimer.CurrentProgress()
+			t := math.Pow(math.Min(p, 1-p), 2)
+			op.ColorScale.ScaleWithColor(NoireToColor(e.color.Shade(t)))
 		} else {
 			op.ColorScale.ScaleWithColor(NoireToColor(e.color))
 		}

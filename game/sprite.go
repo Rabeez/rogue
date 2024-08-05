@@ -61,7 +61,7 @@ func NewPlayer(x, y int) *Player {
 	}
 }
 
-func (p *Player) Update(colliders *map[Vector2]bool, coins *[]*Coin) {
+func (p *Player) Update(colliders *map[Vector2]bool, enemies []*Enemy, coins *[]*Coin) {
 	deltaPos := NewVector2(0, 0)
 	if inpututil.IsKeyJustPressed(ebiten.KeyUp) {
 		deltaPos.Y = -p.speed
@@ -72,12 +72,20 @@ func (p *Player) Update(colliders *map[Vector2]bool, coins *[]*Coin) {
 	} else if inpututil.IsKeyJustPressed(ebiten.KeyRight) {
 		deltaPos.X = p.speed
 	}
-
 	newPos := p.Pos.Add(*deltaPos)
-	if _, ok := (*colliders)[newPos]; !ok {
+
+	// Collisions
+	_, wallOverlap := (*colliders)[newPos]
+	var enemyOverlap bool = false
+	for _, e := range enemies {
+		enemyOverlap = newPos.Equals(*e.Pos)
+		break
+	}
+	if !wallOverlap && !enemyOverlap {
 		p.Pos = &newPos
 	}
 
+	// Pickups
 	for i, c := range *coins {
 		if c.Pos.Equals(*p.Pos) {
 			p.gold += c.value
@@ -120,8 +128,10 @@ func (e *Enemy) Update(p *Player, colliders *map[Vector2]bool) {
 			// fmt.Println(d)
 			dir := p.Pos.Sub(*e.Pos).GridNormalize()
 			newPos := e.Pos.Add(dir)
-			// Wall collisions
-			if _, ok := (*colliders)[newPos]; !ok {
+			// Collisions
+			_, wallOverlap := (*colliders)[newPos]
+			playerOverlap := newPos.Equals(*p.Pos)
+			if !wallOverlap && !playerOverlap {
 				e.Pos = &newPos
 			}
 		}

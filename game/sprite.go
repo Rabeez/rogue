@@ -41,8 +41,10 @@ func (p *Sprite) Draw(panel *Panel) {
 
 type Player struct {
 	*Sprite
-	speed int
-	gold  int
+	speed       int
+	health      int
+	attackTimer *Timer
+	gold        int
 }
 
 func NewPlayer(x, y int) *Player {
@@ -52,7 +54,9 @@ func NewPlayer(x, y int) *Player {
 		log.Fatalf("Player speed has to be >= 1: %v", s)
 	}
 	return &Player{
-		speed: s,
+		speed:       s,
+		health:      5,
+		attackTimer: NewTimer(time.Millisecond * 200),
 		Sprite: &Sprite{
 			Pos:   NewVector2(x, y),
 			color: color.RGBA{0xff, 0xff, 0x00, 0xff},
@@ -61,7 +65,9 @@ func NewPlayer(x, y int) *Player {
 	}
 }
 
-func (p *Player) Update(colliders *map[Vector2]bool, enemies []*Enemy, coins *[]*Coin) {
+func (p *Player) Update(colliders *map[Vector2]bool, enemies *[]*Enemy, coins *[]*Coin) {
+	p.attackTimer.Update()
+	// All player keypresses
 	deltaPos := NewVector2(0, 0)
 	if inpututil.IsKeyJustPressed(ebiten.KeyUp) {
 		deltaPos.Y = -p.speed
@@ -71,13 +77,30 @@ func (p *Player) Update(colliders *map[Vector2]bool, enemies []*Enemy, coins *[]
 		deltaPos.X = -p.speed
 	} else if inpututil.IsKeyJustPressed(ebiten.KeyRight) {
 		deltaPos.X = p.speed
+	} else if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+		if p.attackTimer.IsReady() {
+			p.attackTimer.Reset()
+			// AOE attack in 3x3 around player with fixed 1 dmg
+			var killedIdx []int
+			for i, e := range *enemies {
+				if d := p.Pos.ManDistance(*e.Pos); d <= 1 {
+					e.health -= 1
+					if e.health <= 0 {
+						killedIdx = append(killedIdx, i)
+					}
+				}
+			}
+			for _, i := range killedIdx {
+				*enemies = slices.Delete(*enemies, i, i+1)
+			}
+		}
 	}
 	newPos := p.Pos.Add(*deltaPos)
 
 	// Collisions
 	_, wallOverlap := (*colliders)[newPos]
 	var enemyOverlap bool = false
-	for _, e := range enemies {
+	for _, e := range *enemies {
 		enemyOverlap = newPos.Equals(*e.Pos)
 		break
 	}
@@ -99,6 +122,7 @@ func (p *Player) Update(colliders *map[Vector2]bool, enemies []*Enemy, coins *[]
 type Enemy struct {
 	*Sprite
 	aggroRadius   int
+	health        int
 	movementTimer *Timer
 }
 
@@ -110,6 +134,7 @@ func NewEnemy(x, y int) *Enemy {
 
 	return &Enemy{
 		aggroRadius:   ar,
+		health:        2,
 		movementTimer: NewTimer(time.Millisecond * 200),
 		Sprite: &Sprite{
 			Pos:   NewVector2(x, y),

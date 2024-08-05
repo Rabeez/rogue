@@ -76,6 +76,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	PutText(interfaceLeftPanel, "hello", 0, 0, color.RGBA{200, 0, 0, 255}, 24)
 	PutText(interfaceRightPanel, "hello again", 100, 100, color.RGBA{10, 0, 100, 255}, 30)
 	PutText(interfaceRightPanel, fmt.Sprintf("Gold: %d", g.currentLevel.Player.gold), 100, 130, color.RGBA{10, 50, 100, 255}, 30)
+	PutText(interfaceRightPanel, fmt.Sprintf("Health: %d", g.currentLevel.Player.health), 100, 200, color.RGBA{100, 50, 100, 255}, 30)
 
 	// Debug info
 	ebitenutil.DebugPrint(screen, fmt.Sprintf("%.0f", ebiten.ActualTPS()))

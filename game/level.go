@@ -145,7 +145,7 @@ func (l *Level) Draw(panel *Panel) {
 }
 
 func (l *Level) Update() error {
-	l.Player.Update(&l.Colliders, l.Enemies, &l.Coins)
+	l.Player.Update(&l.Colliders, &l.Enemies, &l.Coins)
 
 	for _, e := range l.Enemies {
 		e.Update(l.Player, &l.Colliders)

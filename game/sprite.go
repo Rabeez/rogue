@@ -3,6 +3,7 @@ package game
 import (
 	"image/color"
 	"log"
+	"math"
 	"slices"
 	"time"
 
@@ -19,15 +20,15 @@ type Sprite struct {
 	color color.Color
 }
 
-func (p *Sprite) Draw(panel *Panel) {
+func (s *Sprite) Draw(panel *Panel) {
 	// This method converts sprite grid coords to screen pixel coords for drawing
 	op := &ebiten.DrawImageOptions{}
-	pixelX := float64(p.Pos.X * TILE_SIZE)
-	pixelY := float64(p.Pos.Y * TILE_SIZE)
+	pixelX := float64(s.Pos.X * TILE_SIZE)
+	pixelY := float64(s.Pos.Y * TILE_SIZE)
 
 	// Detect bounds and overflow drawing
-	w, h := p.Img.Bounds().Dx(), p.Img.Bounds().Dy()
-	if p.Pos.X+w > panel.Size.X || p.Pos.Y+h > panel.Size.Y {
+	w, h := s.Img.Bounds().Dx(), s.Img.Bounds().Dy()
+	if s.Pos.X+w > panel.Size.X || s.Pos.Y+h > panel.Size.Y {
 		log.Fatalf("Overflow drawing detected\n")
 	}
 
@@ -35,8 +36,8 @@ func (p *Sprite) Draw(panel *Panel) {
 	op.GeoM.Translate(float64(panel.Corner.X), float64(panel.Corner.Y))
 	op.GeoM.Translate(pixelX, pixelY)
 	op.GeoM.Scale(2, 2)
-	op.ColorScale.ScaleWithColor(p.color)
-	panel.Screen.DrawImage(p.Img, op)
+	op.ColorScale.ScaleWithColor(s.color)
+	panel.Screen.DrawImage(s.Img, op)
 }
 
 type Player struct {
@@ -56,7 +57,7 @@ func NewPlayer(x, y int) *Player {
 	return &Player{
 		speed:       s,
 		health:      5,
-		attackTimer: NewTimer(time.Millisecond * 200),
+		attackTimer: NewTimer(time.Millisecond*200, true),
 		Sprite: &Sprite{
 			Pos:   NewVector2(x, y),
 			color: color.RGBA{0xff, 0xff, 0x00, 0xff},
@@ -116,7 +117,32 @@ func (p *Player) Update(colliders *map[Vector2]bool, enemies *[]*Enemy, coins *[
 			break
 		}
 	}
+}
 
+func (p *Player) Draw(panel *Panel) {
+	// This method converts sprite grid coords to screen pixel coords for drawing
+	op := &ebiten.DrawImageOptions{}
+	pixelX := float64(p.Pos.X * TILE_SIZE)
+	pixelY := float64(p.Pos.Y * TILE_SIZE)
+
+	// Detect bounds and overflow drawing
+	w, h := p.Img.Bounds().Dx(), p.Img.Bounds().Dy()
+	if p.Pos.X+w > panel.Size.X || p.Pos.Y+h > panel.Size.Y {
+		log.Fatalf("Overflow drawing detected\n")
+	}
+
+	// Account for panel offset
+	op.GeoM.Translate(float64(panel.Corner.X), float64(panel.Corner.Y))
+	op.GeoM.Translate(pixelX, pixelY)
+	op.GeoM.Scale(2, 2)
+
+	// Dynamic color based on attack readiness
+	op.ColorScale.ScaleWithColor(p.color)
+	if !p.attackTimer.IsReady() {
+		op.ColorScale.ScaleAlpha(float32(math.Max(0.5, p.attackTimer.CurrentProgress())))
+	}
+
+	panel.Screen.DrawImage(p.Img, op)
 }
 
 type Enemy struct {
@@ -136,8 +162,8 @@ func NewEnemy(x, y int) *Enemy {
 	return &Enemy{
 		aggroRadius:   ar,
 		health:        2,
-		attackTimer:   NewTimer(time.Second * 1),
-		movementTimer: NewTimer(time.Millisecond * 200),
+		attackTimer:   NewTimer(time.Second*1, true),
+		movementTimer: NewTimer(time.Millisecond*200, true),
 		Sprite: &Sprite{
 			Pos:   NewVector2(x, y),
 			color: color.RGBA{0xaa, 0x20, 0x20, 0xff},
@@ -166,13 +192,38 @@ func (e *Enemy) Update(p *Player, colliders *map[Vector2]bool) {
 	}
 
 	if e.attackTimer.IsReady() {
-		e.attackTimer.Reset()
 		// AOE attack in 3x3 around enemy with fixed 1 dmg
 		if d := p.Pos.ManDistance(*e.Pos); d <= 1 {
+			e.attackTimer.Reset()
 			p.health -= 1
 		}
 	}
+}
 
+func (e *Enemy) Draw(panel *Panel) {
+	// This method converts sprite grid coords to screen pixel coords for drawing
+	op := &ebiten.DrawImageOptions{}
+	pixelX := float64(e.Pos.X * TILE_SIZE)
+	pixelY := float64(e.Pos.Y * TILE_SIZE)
+
+	// Detect bounds and overflow drawing
+	w, h := e.Img.Bounds().Dx(), e.Img.Bounds().Dy()
+	if e.Pos.X+w > panel.Size.X || e.Pos.Y+h > panel.Size.Y {
+		log.Fatalf("Overflow drawing detected\n")
+	}
+
+	// Account for panel offset
+	op.GeoM.Translate(float64(panel.Corner.X), float64(panel.Corner.Y))
+	op.GeoM.Translate(pixelX, pixelY)
+	op.GeoM.Scale(2, 2)
+
+	// Dynamic color based on attack readiness
+	op.ColorScale.ScaleWithColor(e.color)
+	if !e.attackTimer.IsReady() {
+		op.ColorScale.ScaleAlpha(float32(math.Max(0.5, e.attackTimer.CurrentProgress())))
+	}
+
+	panel.Screen.DrawImage(e.Img, op)
 }
 
 type WallType int

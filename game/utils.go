@@ -28,20 +28,20 @@ func PutText(panel *Panel, s string, x, y float64, clr color.Color, sz float64) 
 	text.Draw(panel.Screen, s, f, op)
 }
 
-func abs(a int) int {
+func Abs(a int) int {
 	if a >= 0 {
 		return a
 	}
 	return -a
 }
 
-func sign(a int) int {
+func Sign(a int) int {
 	if a >= 0 {
 		return 1
 	}
 	return -1
 }
 
-func randRange(min, max int) int {
+func RandRange(min, max int) int {
 	return rand.IntN(max-min) + min
 }

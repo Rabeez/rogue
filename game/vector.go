@@ -30,13 +30,13 @@ func (v Vector2) Sub(other Vector2) Vector2 {
 }
 
 func (v Vector2) ManDistance(other Vector2) int {
-	return abs(v.X-other.X) + abs(v.Y-other.Y)
+	return Abs(v.X-other.X) + Abs(v.Y-other.Y)
 }
 
 func (v Vector2) GridNormalize() Vector2 {
-	if abs(v.X) >= abs(v.Y) {
-		return *NewVector2(sign(v.X), 0)
+	if Abs(v.X) >= Abs(v.Y) {
+		return *NewVector2(Sign(v.X), 0)
 	} else {
-		return *NewVector2(0, sign(v.Y))
+		return *NewVector2(0, Sign(v.Y))
 	}
 }

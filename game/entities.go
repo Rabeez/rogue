@@ -82,20 +82,14 @@ func (p *Player) Update(l *Level) {
 		if p.attackTimer.IsReady() {
 			p.attackTimer.Reset()
 			// AOE attack in 3x3 around player with fixed 1 dmg
-			var killedIdx []int
-			for i, e := range l.Enemies {
+			for _, e := range l.Enemies {
 				if d := p.Pos.ManDistance(*e.Pos); d <= 1 {
 					e.health -= 1
 					// TODO: start a text anim here for damage numbers
 					if e.health <= 0 {
-						killedIdx = append(killedIdx, i)
+						e.isDying = true
 					}
 				}
-			}
-			// TODO: have enemy update it's sprite while in "dying state"
-			// article has example with plane changing shape
-			for _, i := range killedIdx {
-				l.Enemies = slices.Delete(l.Enemies, i, i+1)
 			}
 
 			// AOE attack in 3x3 around player
@@ -168,6 +162,9 @@ type Enemy struct {
 	health        int
 	attackTimer   *Timer
 	movementTimer *Timer
+	isDying       bool
+	isDead        bool
+	deathTimer    *Timer
 }
 
 func NewEnemy(x, y int) *Enemy {
@@ -181,6 +178,9 @@ func NewEnemy(x, y int) *Enemy {
 		health:        2,
 		attackTimer:   NewTimer(time.Second*1, true),
 		movementTimer: NewTimer(time.Millisecond*200, true),
+		isDying:       false,
+		isDead:        false,
+		deathTimer:    nil,
 		Sprite: &Sprite{
 			Pos:   NewVector2(x, y),
 			color: color.RGBA{0xaa, 0x20, 0x20, 0xff},
@@ -193,7 +193,18 @@ func (e *Enemy) Update(l *Level) {
 	e.movementTimer.Update()
 	e.attackTimer.Update()
 
-	if e.movementTimer.IsReady() {
+	if e.isDying && e.deathTimer == nil {
+		e.deathTimer = NewTimer(time.Millisecond*500*1, false)
+	}
+
+	if e.deathTimer != nil {
+		e.deathTimer.Update()
+		if e.deathTimer.IsReady() {
+			e.isDead = true
+		}
+	}
+
+	if !e.isDead && e.movementTimer.IsReady() {
 		e.movementTimer.Reset()
 		if d := e.Pos.ManDistance(*l.Player.Pos); d <= e.aggroRadius {
 			// fmt.Println(d)
@@ -208,7 +219,7 @@ func (e *Enemy) Update(l *Level) {
 		}
 	}
 
-	if e.attackTimer.IsReady() {
+	if !e.isDead && e.attackTimer.IsReady() {
 		// AOE attack in 3x3 around enemy with fixed 1 dmg
 		if d := l.Player.Pos.ManDistance(*e.Pos); d <= 1 {
 			e.attackTimer.Reset()
@@ -235,11 +246,17 @@ func (e *Enemy) Draw(panel *Panel) {
 	op.GeoM.Translate(pixelX, pixelY)
 	op.GeoM.Scale(2, 2)
 
-	// Dynamic color based on attack readiness
-	// TODO: color animation while taking damage
+	// Dynamic color based on attack readiness or dying state
 	op.ColorScale.ScaleWithColor(e.color)
-	if !e.attackTimer.IsReady() {
-		op.ColorScale.ScaleAlpha(float32(math.Max(0.5, e.attackTimer.CurrentProgress())))
+	if e.isDying {
+		if !e.deathTimer.IsReady() {
+			p := math.Max(0.5, e.deathTimer.CurrentProgress())
+			op.ColorScale.ScaleAlpha(1 - float32(p))
+		}
+	} else {
+		if !e.attackTimer.IsReady() {
+			op.ColorScale.ScaleAlpha(float32(math.Max(0.5, e.attackTimer.CurrentProgress())))
+		}
 	}
 
 	panel.Screen.DrawImage(e.Img, op)

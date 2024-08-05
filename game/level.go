@@ -3,6 +3,7 @@ package game
 import (
 	"fmt"
 	"log"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -155,8 +156,15 @@ func (l *Level) Draw(panel *Panel) {
 func (l *Level) Update() error {
 	l.Player.Update(l)
 
-	for _, e := range l.Enemies {
+	var deadThisTick []int
+	for i, e := range l.Enemies {
 		e.Update(l)
+		if e.isDead {
+			deadThisTick = append(deadThisTick, i)
+		}
+	}
+	for _, i := range deadThisTick {
+		l.Enemies = slices.Delete(l.Enemies, i, i+1)
 	}
 
 	return nil

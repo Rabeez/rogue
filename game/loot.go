@@ -33,6 +33,14 @@ func NewLootTable() *LootTable {
 	}
 }
 
+var possibleDropOffsets = []Vector2{
+	*NewVector2(0, 0),
+	*NewVector2(0, -1),
+	*NewVector2(0, 1),
+	*NewVector2(1, 0),
+	*NewVector2(-1, 0),
+}
+
 type Chest struct {
 	*Sprite
 	loot *LootTable
@@ -50,5 +58,10 @@ func NewChest(x, y int) *Chest {
 }
 
 func (l *Chest) Open(coins *[]*Coin) {
-	*coins = append(*coins, NewCoin(l.Pos.X, l.Pos.Y, l.loot.gold))
+	dropOffsetIdx := 0
+	{
+		dropLocation := NewVector2(l.Pos.X+possibleDropOffsets[dropOffsetIdx].X, l.Pos.Y+possibleDropOffsets[dropOffsetIdx].Y)
+		*coins = append(*coins, NewCoin(int(dropLocation.X), int(dropLocation.Y), l.loot.gold))
+		dropOffsetIdx++
+	}
 }

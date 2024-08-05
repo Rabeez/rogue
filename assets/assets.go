@@ -20,6 +20,7 @@ var FontFaceSource = mustLoadFontFace("fonts/antiquity-print.ttf")
 // TODO: should TILE_SIZE be used here, or should these be manually resized to match?
 var PlayerSprite = mustLoadImage("tiles/1bit_tile_pack/extracted/1_01-01.png")
 var EnemySprite = mustLoadImage("tiles/1bit_tile_pack/extracted/1_02-01.png")
+var CoinSprite = mustLoadImage("tiles/1bit_tile_pack/extracted/1_00-11.png")
 
 var (
 	WallSprite_TopLeft = mustLoadImage(

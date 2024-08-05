@@ -11,7 +11,7 @@ func NewVector2(x, y int) *Vector2 {
 	}
 }
 
-func (v Vector2) Eq(other Vector2) bool {
+func (v Vector2) Equals(other Vector2) bool {
 	return v.X == other.X && v.Y == other.Y
 }
 

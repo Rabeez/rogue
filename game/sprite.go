@@ -3,6 +3,7 @@ package game
 import (
 	"image/color"
 	"log"
+	"slices"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -41,6 +42,7 @@ func (p *Sprite) Draw(panel *Panel) {
 type Player struct {
 	*Sprite
 	speed int
+	gold  int
 }
 
 func NewPlayer(x, y int) *Player {
@@ -59,7 +61,7 @@ func NewPlayer(x, y int) *Player {
 	}
 }
 
-func (p *Player) Update(colliders *map[Vector2]bool) {
+func (p *Player) Update(colliders *map[Vector2]bool, coins *[]*Coin) {
 	deltaPos := NewVector2(0, 0)
 	if inpututil.IsKeyJustPressed(ebiten.KeyUp) {
 		deltaPos.Y = -p.speed
@@ -75,6 +77,15 @@ func (p *Player) Update(colliders *map[Vector2]bool) {
 	if _, ok := (*colliders)[newPos]; !ok {
 		p.Pos = &newPos
 	}
+
+	for i, c := range *coins {
+		if c.Pos.Equals(*p.Pos) {
+			p.gold += c.value
+			*coins = slices.Delete(*coins, i, i+1)
+			break
+		}
+	}
+
 }
 
 type Enemy struct {
@@ -132,6 +143,22 @@ const (
 	Wall_Horz
 	Wall_Vert
 )
+
+type Coin struct {
+	*Sprite
+	value int
+}
+
+func NewCoin(x, y int, value int) *Coin {
+	return &Coin{
+		value: value,
+		Sprite: &Sprite{
+			Pos:   NewVector2(x, y),
+			color: color.RGBA{0xaa, 0xaa, 0x00, 0xff},
+			Img:   assets.CoinSprite,
+		},
+	}
+}
 
 type Wall struct {
 	*Sprite

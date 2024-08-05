@@ -3,6 +3,7 @@ package game
 import (
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 
 	"github.com/Rabeez/rogue/data"
@@ -13,6 +14,7 @@ type Level struct {
 	Size     Vector2
 	Player   *Player
 	Enemies  []*Enemy
+	Coins    []*Coin
 	// TODO: only keep map for wall data and loop over it for drawing. Separate array is unnecesasry
 	Walls     []*Wall
 	Colliders map[Vector2]bool
@@ -21,6 +23,7 @@ type Level struct {
 func makeLevelFromMatrix(mat [][]string) *Level {
 	var p *Player
 	var e []*Enemy
+	var coins []*Coin
 	var w []*Wall
 	c := make(map[Vector2]bool)
 
@@ -33,11 +36,18 @@ func makeLevelFromMatrix(mat [][]string) *Level {
 			if len(vv) == 0 {
 				continue
 			}
-			switch vv {
+			vv_check := vv[:2]
+			switch vv_check {
 			case "ep":
 				p = NewPlayer(col, row)
 			case "ee":
 				e = append(e, NewEnemy(col, row))
+			case "ec":
+				coin_val, err := strconv.Atoi(vv[2:])
+				if err != nil {
+					panic(err)
+				}
+				coins = append(coins, NewCoin(col, row, coin_val))
 			case "tl":
 				w = append(w, NewWall(col, row, Wall_TopLeft))
 				c[*NewVector2(col, row)] = true
@@ -65,10 +75,10 @@ func makeLevelFromMatrix(mat [][]string) *Level {
 			case "br":
 				w = append(w, NewWall(col, row, Wall_LowerRight))
 				c[*NewVector2(col, row)] = true
-			case "h":
+			case "hw":
 				w = append(w, NewWall(col, row, Wall_Horz))
 				c[*NewVector2(col, row)] = true
-			case "v":
+			case "vw":
 				w = append(w, NewWall(col, row, Wall_Vert))
 				c[*NewVector2(col, row)] = true
 			default:
@@ -82,6 +92,7 @@ func makeLevelFromMatrix(mat [][]string) *Level {
 		Size:      *sz,
 		Player:    p,
 		Enemies:   e,
+		Coins:     coins,
 		Walls:     w,
 		Colliders: c,
 	}
@@ -127,11 +138,14 @@ func (l *Level) Draw(panel *Panel) {
 	for _, e := range l.Enemies {
 		e.Draw(panel)
 	}
+	for _, c := range l.Coins {
+		c.Draw(panel)
+	}
 	l.Player.Draw(panel)
 }
 
 func (l *Level) Update() error {
-	l.Player.Update(&l.Colliders)
+	l.Player.Update(&l.Colliders, &l.Coins)
 
 	for _, e := range l.Enemies {
 		e.Update(l.Player, &l.Colliders)

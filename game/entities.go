@@ -92,6 +92,8 @@ func (p *Player) Update(l *Level) {
 					}
 				}
 			}
+			// TODO: have enemy update it's sprite while in "dying state"
+			// article has example with plane changing shape
 			for _, i := range killedIdx {
 				l.Enemies = slices.Delete(l.Enemies, i, i+1)
 			}

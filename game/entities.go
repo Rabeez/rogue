@@ -86,6 +86,7 @@ func (p *Player) Update(colliders *map[Vector2]bool, enemies *[]*Enemy, chests *
 			for i, e := range *enemies {
 				if d := p.Pos.ManDistance(*e.Pos); d <= 1 {
 					e.health -= 1
+					// TODO: start a text anim here for damage numbers
 					if e.health <= 0 {
 						killedIdx = append(killedIdx, i)
 					}
@@ -149,6 +150,7 @@ func (p *Player) Draw(panel *Panel) {
 	op.GeoM.Scale(2, 2)
 
 	// Dynamic color based on attack readiness
+	// TODO: color animation while taking damage
 	op.ColorScale.ScaleWithColor(p.color)
 	if !p.attackTimer.IsReady() {
 		op.ColorScale.ScaleAlpha(float32(math.Max(0.5, p.attackTimer.CurrentProgress())))
@@ -207,6 +209,7 @@ func (e *Enemy) Update(p *Player, colliders *map[Vector2]bool) {
 		// AOE attack in 3x3 around enemy with fixed 1 dmg
 		if d := p.Pos.ManDistance(*e.Pos); d <= 1 {
 			e.attackTimer.Reset()
+			// TODO: start a text anim here for damage numbers
 			p.health -= 1
 		}
 	}
@@ -230,6 +233,7 @@ func (e *Enemy) Draw(panel *Panel) {
 	op.GeoM.Scale(2, 2)
 
 	// Dynamic color based on attack readiness
+	// TODO: color animation while taking damage
 	op.ColorScale.ScaleWithColor(e.color)
 	if !e.attackTimer.IsReady() {
 		op.ColorScale.ScaleAlpha(float32(math.Max(0.5, e.attackTimer.CurrentProgress())))

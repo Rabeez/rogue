@@ -66,7 +66,7 @@ func NewPlayer(x, y int) *Player {
 	}
 }
 
-func (p *Player) Update(colliders *map[Vector2]bool, enemies *[]*Enemy, coins *[]*Coin) {
+func (p *Player) Update(colliders *map[Vector2]bool, enemies *[]*Enemy, chests *[]*Chest, coins *[]*Coin) {
 	p.attackTimer.Update()
 	// All player keypresses
 	deltaPos := NewVector2(0, 0)
@@ -93,6 +93,18 @@ func (p *Player) Update(colliders *map[Vector2]bool, enemies *[]*Enemy, coins *[
 			}
 			for _, i := range killedIdx {
 				*enemies = slices.Delete(*enemies, i, i+1)
+			}
+
+			// AOE attack in 3x3 around player
+			var brokenIdx []int
+			for i, c := range *chests {
+				if d := p.Pos.ManDistance(*c.Pos); d <= 1 {
+					brokenIdx = append(brokenIdx, i)
+				}
+			}
+			for _, i := range brokenIdx {
+				(*chests)[i].Open(coins)
+				*chests = slices.Delete(*chests, i, i+1)
 			}
 		}
 	}
@@ -241,22 +253,6 @@ const (
 	Wall_Horz
 	Wall_Vert
 )
-
-type Coin struct {
-	*Sprite
-	value int
-}
-
-func NewCoin(x, y int, value int) *Coin {
-	return &Coin{
-		value: value,
-		Sprite: &Sprite{
-			Pos:   NewVector2(x, y),
-			color: color.RGBA{0xaa, 0xaa, 0x00, 0xff},
-			Img:   assets.CoinSprite,
-		},
-	}
-}
 
 type Wall struct {
 	*Sprite

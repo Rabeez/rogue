@@ -3,6 +3,7 @@ package game
 import (
 	"image/color"
 	"log"
+	"math/rand/v2"
 
 	"github.com/Rabeez/rogue/assets"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
@@ -43,4 +44,8 @@ func sign(a int) int {
 		return 1
 	}
 	return -1
+}
+
+func randRange(min, max int) int {
+	return rand.IntN(max-min) + min
 }

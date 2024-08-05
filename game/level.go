@@ -15,6 +15,7 @@ type Level struct {
 	Player   *Player
 	Enemies  []*Enemy
 	Coins    []*Coin
+	Chests   []*Chest
 	// TODO: only keep map for wall data and loop over it for drawing. Separate array is unnecesasry
 	Walls     []*Wall
 	Colliders map[Vector2]bool
@@ -24,6 +25,7 @@ func makeLevelFromMatrix(mat [][]string) *Level {
 	var p *Player
 	var e []*Enemy
 	var coins []*Coin
+	var chests []*Chest
 	var w []*Wall
 	c := make(map[Vector2]bool)
 
@@ -42,6 +44,8 @@ func makeLevelFromMatrix(mat [][]string) *Level {
 				p = NewPlayer(col, row)
 			case "ee":
 				e = append(e, NewEnemy(col, row))
+			case "ch":
+				chests = append(chests, NewChest(col, row))
 			case "ec":
 				coin_val, err := strconv.Atoi(vv[2:])
 				if err != nil {
@@ -93,6 +97,7 @@ func makeLevelFromMatrix(mat [][]string) *Level {
 		Player:    p,
 		Enemies:   e,
 		Coins:     coins,
+		Chests:    chests,
 		Walls:     w,
 		Colliders: c,
 	}
@@ -138,6 +143,9 @@ func (l *Level) Draw(panel *Panel) {
 	for _, e := range l.Enemies {
 		e.Draw(panel)
 	}
+	for _, c := range l.Chests {
+		c.Draw(panel)
+	}
 	for _, c := range l.Coins {
 		c.Draw(panel)
 	}
@@ -145,7 +153,7 @@ func (l *Level) Draw(panel *Panel) {
 }
 
 func (l *Level) Update() error {
-	l.Player.Update(&l.Colliders, &l.Enemies, &l.Coins)
+	l.Player.Update(&l.Colliders, &l.Enemies, &l.Chests, &l.Coins)
 
 	for _, e := range l.Enemies {
 		e.Update(l.Player, &l.Colliders)

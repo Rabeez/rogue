@@ -111,7 +111,7 @@ func (e *Enemy) Update(p *Player, colliders *map[Vector2]bool) {
 			newPos := e.Pos.Add(dir)
 			// Wall collisions
 			if _, ok := (*colliders)[newPos]; !ok {
-				p.Pos = &newPos
+				e.Pos = &newPos
 			}
 		}
 	}

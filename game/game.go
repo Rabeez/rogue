@@ -51,9 +51,9 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	// Setup canvases
 	gamePanel := NewPanel(0, 0, WINDOW_HEIGHT, WINDOW_HEIGHT, screen)
-	interfacePanel := NewPanel(WINDOW_HEIGHT, 0, WINDOW_WIDTH, WINDOW_HEIGHT, screen)
-	interfaceLeftPanel := interfacePanel.SubPanel(image.Rect(0, 0, 100, WINDOW_HEIGHT))
-	interfaceRightPanel := interfacePanel.SubPanel(image.Rect(100, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
+	_interfacePanel := NewPanel(WINDOW_HEIGHT, 0, WINDOW_WIDTH, WINDOW_HEIGHT, screen)
+	interfaceLeftPanel := _interfacePanel.SubPanel(image.Rect(0, 0, 100, WINDOW_HEIGHT))
+	interfaceRightPanel := _interfacePanel.SubPanel(image.Rect(100, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
 
 	// Draw game level w/ entitites
 	g.currentLevel.Draw(gamePanel)

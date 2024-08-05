@@ -1,9 +1,8 @@
 package game
 
 import (
-	"image/color"
-
 	"github.com/Rabeez/rogue/assets"
+	"github.com/teacat/noire"
 )
 
 type Coin struct {
@@ -16,7 +15,7 @@ func NewCoin(x, y int, value int) *Coin {
 		value: value,
 		Sprite: &Sprite{
 			Pos:   NewVector2(x, y),
-			color: color.RGBA{0xaa, 0xaa, 0x00, 0xff},
+			color: noire.NewRGBA(0xaa, 0xaa, 0x00, 0xff),
 			Img:   assets.CoinSprite,
 		},
 	}
@@ -27,7 +26,7 @@ type LootTable struct {
 }
 
 func NewLootTable() *LootTable {
-	gold := randRange(2, 10)
+	gold := RandRange(2, 10)
 	return &LootTable{
 		gold: gold,
 	}
@@ -51,7 +50,7 @@ func NewChest(x, y int) *Chest {
 		loot: NewLootTable(),
 		Sprite: &Sprite{
 			Pos:   NewVector2(x, y),
-			color: color.RGBA{0xaa, 0xaa, 0x00, 0xff},
+			color: noire.NewRGBA(0xaa, 0xaa, 0x00, 0xff),
 			Img:   assets.ChestSprite,
 		},
 	}

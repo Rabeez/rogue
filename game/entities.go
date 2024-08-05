@@ -1,7 +1,6 @@
 package game
 
 import (
-	"image/color"
 	"log"
 	"math"
 	"slices"
@@ -9,6 +8,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/teacat/noire"
 
 	"github.com/Rabeez/rogue/assets"
 )
@@ -17,7 +17,7 @@ type Sprite struct {
 	// Sprite coords are in grid coord space
 	Pos   *Vector2
 	Img   *ebiten.Image
-	color color.Color
+	color noire.Color
 }
 
 func (s *Sprite) Draw(panel *Panel) {
@@ -36,7 +36,7 @@ func (s *Sprite) Draw(panel *Panel) {
 	op.GeoM.Translate(float64(panel.Corner.X), float64(panel.Corner.Y))
 	op.GeoM.Translate(pixelX, pixelY)
 	op.GeoM.Scale(2, 2)
-	op.ColorScale.ScaleWithColor(s.color)
+	op.ColorScale.ScaleWithColor(NoireToColor(s.color))
 	panel.Screen.DrawImage(s.Img, op)
 }
 
@@ -60,7 +60,7 @@ func NewPlayer(x, y int) *Player {
 		attackTimer: NewTimer(time.Millisecond*200, true),
 		Sprite: &Sprite{
 			Pos:   NewVector2(x, y),
-			color: color.RGBA{0xff, 0xff, 0x00, 0xff},
+			color: noire.NewRGBA(0xff, 0xff, 0x00, 0xff),
 			Img:   assets.PlayerSprite,
 		},
 	}
@@ -148,9 +148,10 @@ func (p *Player) Draw(panel *Panel) {
 
 	// Dynamic color based on attack readiness
 	// TODO: color animation while taking damage
-	op.ColorScale.ScaleWithColor(p.color)
 	if !p.attackTimer.IsReady() {
-		op.ColorScale.ScaleAlpha(float32(math.Max(0.5, p.attackTimer.CurrentProgress())))
+		op.ColorScale.ScaleWithColor(NoireToColor(p.color.Shade(p.attackTimer.CurrentProgress())))
+	} else {
+		op.ColorScale.ScaleWithColor(NoireToColor(p.color))
 	}
 
 	panel.Screen.DrawImage(p.Img, op)
@@ -183,7 +184,7 @@ func NewEnemy(x, y int) *Enemy {
 		deathTimer:    nil,
 		Sprite: &Sprite{
 			Pos:   NewVector2(x, y),
-			color: color.RGBA{0xaa, 0x20, 0x20, 0xff},
+			color: noire.NewRGBA(0xaa, 0x20, 0x20, 0xff),
 			Img:   assets.EnemySprite,
 		},
 	}
@@ -247,7 +248,7 @@ func (e *Enemy) Draw(panel *Panel) {
 	op.GeoM.Scale(2, 2)
 
 	// Dynamic color based on attack readiness or dying state
-	op.ColorScale.ScaleWithColor(e.color)
+	op.ColorScale.ScaleWithColor(NoireToColor(e.color))
 	if e.isDying {
 		if !e.deathTimer.IsReady() {
 			p := math.Max(0.5, e.deathTimer.CurrentProgress())
@@ -255,7 +256,9 @@ func (e *Enemy) Draw(panel *Panel) {
 		}
 	} else {
 		if !e.attackTimer.IsReady() {
-			op.ColorScale.ScaleAlpha(float32(math.Max(0.5, e.attackTimer.CurrentProgress())))
+			op.ColorScale.ScaleWithColor(NoireToColor(e.color.Shade(e.attackTimer.CurrentProgress())))
+		} else {
+			op.ColorScale.ScaleWithColor(NoireToColor(e.color))
 		}
 	}
 
@@ -286,7 +289,7 @@ type Wall struct {
 func NewWall(x, y int, wallType WallType) *Wall {
 	sp := &Sprite{
 		Pos:   NewVector2(x, y),
-		color: color.White,
+		color: noire.NewRGBA(0xff, 0xff, 0xff, 0xff),
 		Img:   nil,
 	}
 	switch wallType {

@@ -7,6 +7,7 @@ import (
 
 	"github.com/Rabeez/rogue/assets"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
+	"github.com/teacat/noire"
 )
 
 func PutText(panel *Panel, s string, x, y float64, clr color.Color, sz float64) {
@@ -44,4 +45,8 @@ func Sign(a int) int {
 
 func RandRange(min, max int) int {
 	return rand.IntN(max-min) + min
+}
+
+func NoireToColor(c noire.Color) color.Color {
+	return color.RGBA{uint8(c.Red), uint8(c.Green), uint8(c.Blue), uint8(c.Alpha)}
 }

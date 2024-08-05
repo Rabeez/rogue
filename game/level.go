@@ -120,17 +120,6 @@ func NewLevel(level_num int) *Level {
 	// extra:
 	// (zoom will change on player speed -> potions etc or on enemy hit zoom in shake?)
 
-	// w := []*Wall{NewWall(100, 0, Wall_TopLeft), NewWall(100, 300, Wall_Top)}
-	// p := NewPlayer(100, 100)
-	// e := []*Enemy{NewEnemy(200, 100), NewEnemy(200, 300)}
-
-	// return &Level{
-	// 	LevelNum: level_num,
-	// 	Player:   p,
-	// 	Enemies:  e,
-	// 	Walls:    w,
-	// }
-
 	l := makeLevelFromMatrix(data.TestLevel)
 	return l
 }

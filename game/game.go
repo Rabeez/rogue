@@ -10,9 +10,8 @@ import (
 )
 
 const (
-	TITLE     = "Rogue"
-	TILE_SIZE = 16
-	// WINDOW_FACTOR = 4
+	TITLE         = "Rogue"
+	TILE_SIZE     = 16
 	WINDOW_WIDTH  = 80 * TILE_SIZE
 	WINDOW_HEIGHT = 50 * TILE_SIZE
 )
@@ -27,13 +26,6 @@ type Game struct {
 }
 
 func NewGame() *Game {
-
-	// wall layout from map file?
-
-	// player initial location
-	// enemy initial locations
-	// interactables locations
-
 	g := &Game{
 		isPaused:     false,
 		currentLevel: NewLevel(1),
@@ -52,17 +44,6 @@ func (g *Game) Update() error {
 	if !g.isPaused {
 		g.currentLevel.Update()
 	}
-	// keypresses + state update
-
-	// enemy AI
-
-	// use updated state from now:
-
-	// interactions (chest open, pickups, open walls/doors)
-
-	// attacks (projectiles?)
-
-	// collisions? (here or with state updaes?)
 
 	return nil
 }

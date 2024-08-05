@@ -123,6 +123,7 @@ type Enemy struct {
 	*Sprite
 	aggroRadius   int
 	health        int
+	attackTimer   *Timer
 	movementTimer *Timer
 }
 
@@ -135,6 +136,7 @@ func NewEnemy(x, y int) *Enemy {
 	return &Enemy{
 		aggroRadius:   ar,
 		health:        2,
+		attackTimer:   NewTimer(time.Second * 1),
 		movementTimer: NewTimer(time.Millisecond * 200),
 		Sprite: &Sprite{
 			Pos:   NewVector2(x, y),
@@ -146,6 +148,7 @@ func NewEnemy(x, y int) *Enemy {
 
 func (e *Enemy) Update(p *Player, colliders *map[Vector2]bool) {
 	e.movementTimer.Update()
+	e.attackTimer.Update()
 
 	if e.movementTimer.IsReady() {
 		e.movementTimer.Reset()
@@ -161,6 +164,15 @@ func (e *Enemy) Update(p *Player, colliders *map[Vector2]bool) {
 			}
 		}
 	}
+
+	if e.attackTimer.IsReady() {
+		e.attackTimer.Reset()
+		// AOE attack in 3x3 around enemy with fixed 1 dmg
+		if d := p.Pos.ManDistance(*e.Pos); d <= 1 {
+			p.health -= 1
+		}
+	}
+
 }
 
 type WallType int

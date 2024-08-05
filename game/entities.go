@@ -66,7 +66,7 @@ func NewPlayer(x, y int) *Player {
 	}
 }
 
-func (p *Player) Update(colliders *map[Vector2]bool, enemies *[]*Enemy, chests *[]*Chest, coins *[]*Coin) {
+func (p *Player) Update(l *Level) {
 	p.attackTimer.Update()
 	// All player keypresses
 	deltaPos := NewVector2(0, 0)
@@ -83,7 +83,7 @@ func (p *Player) Update(colliders *map[Vector2]bool, enemies *[]*Enemy, chests *
 			p.attackTimer.Reset()
 			// AOE attack in 3x3 around player with fixed 1 dmg
 			var killedIdx []int
-			for i, e := range *enemies {
+			for i, e := range l.Enemies {
 				if d := p.Pos.ManDistance(*e.Pos); d <= 1 {
 					e.health -= 1
 					// TODO: start a text anim here for damage numbers
@@ -93,28 +93,29 @@ func (p *Player) Update(colliders *map[Vector2]bool, enemies *[]*Enemy, chests *
 				}
 			}
 			for _, i := range killedIdx {
-				*enemies = slices.Delete(*enemies, i, i+1)
+				l.Enemies = slices.Delete(l.Enemies, i, i+1)
 			}
 
 			// AOE attack in 3x3 around player
 			var brokenIdx []int
-			for i, c := range *chests {
+			for i, c := range l.Chests {
 				if d := p.Pos.ManDistance(*c.Pos); d <= 1 {
 					brokenIdx = append(brokenIdx, i)
 				}
 			}
 			for _, i := range brokenIdx {
-				(*chests)[i].Open(coins)
-				*chests = slices.Delete(*chests, i, i+1)
+				// TODO: return loottable here and directly modify level?
+				l.Chests[i].Open(&l.Coins)
+				l.Chests = slices.Delete(l.Chests, i, i+1)
 			}
 		}
 	}
 	newPos := p.Pos.Add(*deltaPos)
 
 	// Collisions
-	_, wallOverlap := (*colliders)[newPos]
+	_, wallOverlap := l.Colliders[newPos]
 	var enemyOverlap bool = false
-	for _, e := range *enemies {
+	for _, e := range l.Enemies {
 		enemyOverlap = newPos.Equals(*e.Pos)
 		break
 	}
@@ -123,10 +124,10 @@ func (p *Player) Update(colliders *map[Vector2]bool, enemies *[]*Enemy, chests *
 	}
 
 	// Pickups
-	for i, c := range *coins {
+	for i, c := range l.Coins {
 		if c.Pos.Equals(*p.Pos) {
 			p.gold += c.value
-			*coins = slices.Delete(*coins, i, i+1)
+			l.Coins = slices.Delete(l.Coins, i, i+1)
 			break
 		}
 	}
@@ -186,19 +187,19 @@ func NewEnemy(x, y int) *Enemy {
 	}
 }
 
-func (e *Enemy) Update(p *Player, colliders *map[Vector2]bool) {
+func (e *Enemy) Update(l *Level) {
 	e.movementTimer.Update()
 	e.attackTimer.Update()
 
 	if e.movementTimer.IsReady() {
 		e.movementTimer.Reset()
-		if d := e.Pos.ManDistance(*p.Pos); d <= e.aggroRadius {
+		if d := e.Pos.ManDistance(*l.Player.Pos); d <= e.aggroRadius {
 			// fmt.Println(d)
-			dir := p.Pos.Sub(*e.Pos).GridNormalize()
+			dir := l.Player.Pos.Sub(*e.Pos).GridNormalize()
 			newPos := e.Pos.Add(dir)
 			// Collisions
-			_, wallOverlap := (*colliders)[newPos]
-			playerOverlap := newPos.Equals(*p.Pos)
+			_, wallOverlap := l.Colliders[newPos]
+			playerOverlap := newPos.Equals(*l.Player.Pos)
 			if !wallOverlap && !playerOverlap {
 				e.Pos = &newPos
 			}
@@ -207,10 +208,10 @@ func (e *Enemy) Update(p *Player, colliders *map[Vector2]bool) {
 
 	if e.attackTimer.IsReady() {
 		// AOE attack in 3x3 around enemy with fixed 1 dmg
-		if d := p.Pos.ManDistance(*e.Pos); d <= 1 {
+		if d := l.Player.Pos.ManDistance(*e.Pos); d <= 1 {
 			e.attackTimer.Reset()
 			// TODO: start a text anim here for damage numbers
-			p.health -= 1
+			l.Player.health -= 1
 		}
 	}
 }

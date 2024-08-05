@@ -18,8 +18,8 @@ var assets embed.FS
 var FontFaceSource = mustLoadFontFace("fonts/antiquity-print.ttf")
 
 // TODO: should TILE_SIZE be used here, or should these be manually resized to match?
-var PlayerSprite = mustLoadSprite("tiles/1bit_tile_pack/Tilesheets/tilesheet_1of2_transparent.png", 16, 20, 17)
-var EnemySprite = mustLoadSprite("tiles/1bit_tile_pack/Tilesheets/tilesheet_1of2_transparent.png", 16, 0, 0)
+var PlayerSprite = mustLoadImage("tiles/1bit_tile_pack/extracted/1_01-01.png")
+var EnemySprite = mustLoadImage("tiles/1bit_tile_pack/extracted/1_02-01.png")
 
 var (
 	WallSprite_TopLeft = mustLoadImage(
@@ -70,12 +70,6 @@ func mustLoadImage(name string) *ebiten.Image {
 	}
 
 	return ebiten.NewImageFromImage(img)
-}
-
-func mustLoadSprite(name string, sz, row, col int) *ebiten.Image {
-	x := col * sz
-	y := row * sz
-	return mustLoadImage(name).SubImage(image.Rect(x, y, x+sz, y+sz)).(*ebiten.Image)
 }
 
 func mustLoadFontFace(name string) *text.GoTextFaceSource {

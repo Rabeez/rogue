@@ -9,10 +9,11 @@ import (
 )
 
 type Level struct {
-	LevelNum  int
-	Size      Vector2
-	Player    *Player
-	Enemies   []*Enemy
+	LevelNum int
+	Size     Vector2
+	Player   *Player
+	Enemies  []*Enemy
+	// TODO: only keep map for wall data and loop over it for drawing. Separate array is unnecesasry
 	Walls     []*Wall
 	Colliders map[Vector2]bool
 }

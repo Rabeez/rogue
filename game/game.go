@@ -22,6 +22,7 @@ var (
 )
 
 type Game struct {
+	isPaused     bool
 	currentLevel *Level
 }
 
@@ -34,6 +35,7 @@ func NewGame() *Game {
 	// interactables locations
 
 	g := &Game{
+		isPaused:     false,
 		currentLevel: NewLevel(1),
 	}
 	return g
@@ -41,12 +43,15 @@ func NewGame() *Game {
 
 func (g *Game) Update() error {
 
-	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
-		// TODO: pause game on escape and show menu with exit option instead
+	if ebiten.IsKeyPressed(ebiten.KeyQ) {
 		return ebiten.Termination
+	} else if ebiten.IsKeyPressed(ebiten.KeyEscape) {
+		g.isPaused = !g.isPaused
 	}
 
-	g.currentLevel.Update()
+	if !g.isPaused {
+		g.currentLevel.Update()
+	}
 	// keypresses + state update
 
 	// enemy AI

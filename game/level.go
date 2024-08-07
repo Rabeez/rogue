@@ -1,7 +1,6 @@
 package game
 
 import (
-	"fmt"
 	"log"
 	"slices"
 	"strconv"
@@ -32,7 +31,7 @@ func makeLevelFromMatrix(mat [][]string) *Level {
 	c := make(map[Vector2]bool)
 
 	sz := NewVector2(len(mat[0]), len(mat))
-	fmt.Printf("Generating level from %vx%v matrix\n", sz.X, sz.Y)
+	log.Printf("Generating level from %vx%v matrix\n", sz.X, sz.Y)
 
 	for row, row_vals := range mat {
 		for col, cell_val := range row_vals {

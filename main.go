@@ -10,6 +10,8 @@ import (
 )
 
 func main() {
+	log.SetFlags(log.Lshortfile)
+
 	ebiten.SetWindowSize(game.WINDOW_WIDTH, game.WINDOW_HEIGHT)
 	ebiten.SetWindowTitle(game.TITLE)
 	ebiten.SetVsyncEnabled(true)

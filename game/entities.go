@@ -208,7 +208,6 @@ func (e *Enemy) Update(l *Level) {
 	if !e.isDead && e.movementTimer.IsReady() {
 		e.movementTimer.Reset()
 		if d := e.Pos.ManDistance(*l.Player.Pos); d <= e.aggroRadius {
-			// fmt.Println(d)
 			dir := l.Player.Pos.Sub(*e.Pos).GridNormalize()
 			newPos := e.Pos.Add(dir)
 			// Collisions

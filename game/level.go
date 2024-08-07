@@ -18,7 +18,8 @@ type Level struct {
 	Coins    []*Coin
 	Chests   []*Chest
 	// TODO: only keep map for wall data and loop over it for drawing. Separate array is unnecesasry
-	Walls     []*Wall
+	Walls []*Wall
+	// TODO: map Vec2 -> array of sprite interface(?)
 	Colliders map[Vector2]bool
 }
 

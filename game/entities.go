@@ -82,7 +82,7 @@ func (p *Player) Update(l *Level) {
 	} else if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
 		if p.attackTimer.IsReady() {
 			p.attackTimer.Reset()
-			// AOE attack in 3x3 around player with fixed 1 dmg
+			// AOE attack in plus-shape around player with fixed 1 dmg
 			for _, e := range l.Enemies {
 				if d := p.Pos.ManDistance(*e.Pos); d <= 1 {
 					e.health -= 1
@@ -93,7 +93,7 @@ func (p *Player) Update(l *Level) {
 				}
 			}
 
-			// AOE attack in 3x3 around player
+			// AOE attack in plus-shape around player
 			var brokenIdx []int
 			for i, c := range l.Chests {
 				if d := p.Pos.ManDistance(*c.Pos); d <= 1 {
@@ -221,7 +221,7 @@ func (e *Enemy) Update(l *Level) {
 	}
 
 	if !e.isDead && e.attackTimer.IsReady() {
-		// AOE attack in 3x3 around enemy with fixed 1 dmg
+		// AOE attack in plus-shape around enemy with fixed 1 dmg
 		if d := l.Player.Pos.ManDistance(*e.Pos); d <= 1 {
 			e.attackTimer.Reset()
 			// TODO: start a text anim here for damage numbers

@@ -10,6 +10,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
+// TODO: move these to separate config file?
+// TODO: move all magic numbers from other files here
 const (
 	TITLE         = "Rogue"
 	TILE_SIZE     = 16

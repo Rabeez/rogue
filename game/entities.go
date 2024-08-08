@@ -69,6 +69,7 @@ func NewPlayer(x, y int) *Player {
 func (p *Player) Update(l *Level) {
 	p.attackTimer.Update()
 	// All player keypresses
+	// TODO: implement RepeatingKeyPress to allow for holding keys
 	deltaPos := NewVector2(0, 0)
 	if inpututil.IsKeyJustPressed(ebiten.KeyUp) {
 		deltaPos.Y = -p.speed

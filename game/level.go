@@ -120,6 +120,8 @@ func NewLevel(level_num int) *Level {
 	// extra:
 	// (zoom will change on player speed -> potions etc or on enemy hit zoom in shake?)
 
+	// TODO: seed rng
+
 	l := makeLevelFromMatrix(data.TestLevel)
 	return l
 }

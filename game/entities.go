@@ -43,11 +43,10 @@ func (s *Sprite) Draw(panel *Panel) {
 
 type Player struct {
 	*Sprite
-	speed       int
-	health      int
-	attackTimer *Timer
-	gold        int
-	// TODO: allow multiple numbers simultaneously when multiple enemies hit player together
+	speed                 int
+	health                int
+	attackTimer           *Timer
+	gold                  int
 	damageIndicatorTimers []*Timer
 }
 

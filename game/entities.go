@@ -43,11 +43,12 @@ func (s *Sprite) Draw(panel *Panel) {
 
 type Player struct {
 	*Sprite
-	speed                int
-	health               int
-	attackTimer          *Timer
-	gold                 int
-	damageIndicatorTimer *Timer
+	speed       int
+	health      int
+	attackTimer *Timer
+	gold        int
+	// TODO: allow multiple numbers simultaneously when multiple enemies hit player together
+	damageIndicatorTimers []*Timer
 }
 
 func NewPlayer(x, y int) *Player {
@@ -57,11 +58,11 @@ func NewPlayer(x, y int) *Player {
 		log.Fatalf("Player speed has to be >= 1: %v", s)
 	}
 	return &Player{
-		speed:                s,
-		health:               5,
-		attackTimer:          NewTimer(time.Millisecond*200, true),
-		gold:                 0,
-		damageIndicatorTimer: nil,
+		speed:                 s,
+		health:                5,
+		attackTimer:           NewTimer(time.Millisecond*200, true),
+		gold:                  0,
+		damageIndicatorTimers: []*Timer{},
 		Sprite: &Sprite{
 			Pos:   NewVector2(x, y),
 			color: noire.NewRGBA(0xff, 0xff, 0x00, 0xff),
@@ -116,11 +117,27 @@ func (p *Player) Update(l *Level) {
 	}
 	newPos := p.Pos.Add(*deltaPos)
 
-	if p.damageIndicatorTimer != nil {
-		p.damageIndicatorTimer.Update()
-		if p.damageIndicatorTimer.IsReady() {
-			p.damageIndicatorTimer = nil
+	// Update damage number timers
+	for i, t := range p.damageIndicatorTimers {
+		if t == nil {
+			continue
 		}
+		t.Update()
+		if t.IsReady() {
+			p.damageIndicatorTimers[i] = nil
+		}
+	}
+	// Count ended timers
+	nils := 0
+	for _, t := range p.damageIndicatorTimers {
+		if t == nil {
+			nils++
+		}
+	}
+	// Only clear list if all timers have ended
+	// This prevents poisitons being shifted between Draw calls
+	if nils > 0 && nils == len(p.damageIndicatorTimers) {
+		p.damageIndicatorTimers = []*Timer{}
 	}
 
 	// Collisions
@@ -171,16 +188,22 @@ func (p *Player) Draw(panel *Panel) {
 
 	panel.Screen.DrawImage(p.Img, op)
 
-	if p.damageIndicatorTimer != nil {
-		progress := p.damageIndicatorTimer.CurrentProgress()
+	spriteW, spriteH := float64(p.Img.Bounds().Dx()), float64(p.Img.Bounds().Dy())
+	xOffsets := *ArangeF(0, spriteW, len(p.damageIndicatorTimers))
+	for i, t := range p.damageIndicatorTimers {
+		if t == nil {
+			continue
+		}
+		progress := t.CurrentProgress()
 		txt := "1"
 		op := &text.DrawOptions{}
 		// Account for panel offset
 		op.GeoM.Translate(float64(panel.Corner.X), float64(panel.Corner.Y))
 		op.GeoM.Translate(pixelX, pixelY)
-		spriteW, spriteH := float64(p.Img.Bounds().Dx()), float64(p.Img.Bounds().Dy())
-		// Center align at middle of sprite
-		op.GeoM.Translate(spriteW/2.0, 0)
+		// Distribute all numbers along sprite width
+		op.GeoM.Translate(xOffsets[i], 0)
+		// // random range
+		// op.GeoM.Translate(RandRangeF(0, spriteW), 0)
 		// TODO: center align text accounting for text width
 		// textW, _ := text.Measure(txt, f, 0)
 		// Animation
@@ -193,14 +216,13 @@ func (p *Player) Draw(panel *Panel) {
 
 type Enemy struct {
 	*Sprite
-	aggroRadius   int
-	health        int
-	attackTimer   *Timer
-	movementTimer *Timer
-	isDying       bool
-	isDead        bool
-	deathTimer    *Timer
-	// TODO: allow multiple numbers simultaneously when multiple enemies hit player together
+	aggroRadius          int
+	health               int
+	attackTimer          *Timer
+	movementTimer        *Timer
+	isDying              bool
+	isDead               bool
+	deathTimer           *Timer
 	damageIndicatorTimer *Timer
 }
 
@@ -270,8 +292,8 @@ func (e *Enemy) Update(l *Level) {
 			// TODO: this should be set as 'payload' in timer? so damage number text uses correct value always
 			dmg := 1
 			l.Player.health -= dmg
-			// TODO: these values should be controlled fully within Enemy
-			l.Player.damageIndicatorTimer = NewTimer(time.Millisecond*300, false)
+			// TODO: these values should be controlled fully within Player
+			l.Player.damageIndicatorTimers = append(l.Player.damageIndicatorTimers, NewTimer(time.Millisecond*300, false))
 		}
 	}
 }

@@ -43,6 +43,22 @@ func RandRange(min, max int) int {
 	return rand.IntN(max-min) + min
 }
 
+func RandRangeF(min, max float64) float64 {
+	return rand.Float64()*(max-min) + min
+}
+
+func ArangeF(start, end float64, num int) *[]float64 {
+	ret := make([]float64, num)
+	if num == 1 {
+		ret[0] = start
+		return &ret
+	}
+	for i := 0; i < num; i++ {
+		ret[i] = start + float64(i)*(end-start)/float64(num-1)
+	}
+	return &ret
+}
+
 func NoireToColor(c noire.Color) color.Color {
 	return color.RGBA{uint8(c.Red), uint8(c.Green), uint8(c.Blue), uint8(c.Alpha)}
 }

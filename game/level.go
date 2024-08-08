@@ -130,14 +130,14 @@ func (l *Level) Draw(panel *Panel) {
 	for _, w := range l.Walls {
 		w.Draw(panel)
 	}
-	for _, e := range l.Enemies {
-		e.Draw(panel)
-	}
 	for _, c := range l.Chests {
 		c.Draw(panel)
 	}
 	for _, c := range l.Coins {
 		c.Draw(panel)
+	}
+	for _, e := range l.Enemies {
+		e.Draw(panel)
 	}
 	l.Player.Draw(panel)
 }

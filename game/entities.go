@@ -43,10 +43,11 @@ func (s *Sprite) Draw(panel *Panel) {
 
 type Player struct {
 	*Sprite
-	speed       int
-	health      int
-	attackTimer *Timer
-	gold        int
+	speed                int
+	health               int
+	attackTimer          *Timer
+	gold                 int
+	damageIndicatorTimer *Timer
 }
 
 func NewPlayer(x, y int) *Player {
@@ -56,9 +57,11 @@ func NewPlayer(x, y int) *Player {
 		log.Fatalf("Player speed has to be >= 1: %v", s)
 	}
 	return &Player{
-		speed:       s,
-		health:      5,
-		attackTimer: NewTimer(time.Millisecond*200, true),
+		speed:                s,
+		health:               5,
+		attackTimer:          NewTimer(time.Millisecond*200, true),
+		gold:                 0,
+		damageIndicatorTimer: nil,
 		Sprite: &Sprite{
 			Pos:   NewVector2(x, y),
 			color: noire.NewRGBA(0xff, 0xff, 0x00, 0xff),
@@ -113,6 +116,13 @@ func (p *Player) Update(l *Level) {
 	}
 	newPos := p.Pos.Add(*deltaPos)
 
+	if p.damageIndicatorTimer != nil {
+		p.damageIndicatorTimer.Update()
+		if p.damageIndicatorTimer.IsReady() {
+			p.damageIndicatorTimer = nil
+		}
+	}
+
 	// Collisions
 	_, wallOverlap := l.Colliders[newPos]
 	var enemyOverlap bool = false
@@ -160,17 +170,37 @@ func (p *Player) Draw(panel *Panel) {
 	}
 
 	panel.Screen.DrawImage(p.Img, op)
+
+	if p.damageIndicatorTimer != nil {
+		progress := p.damageIndicatorTimer.CurrentProgress()
+		txt := "1"
+		op := &text.DrawOptions{}
+		// Account for panel offset
+		op.GeoM.Translate(float64(panel.Corner.X), float64(panel.Corner.Y))
+		op.GeoM.Translate(pixelX, pixelY)
+		spriteW, spriteH := float64(p.Img.Bounds().Dx()), float64(p.Img.Bounds().Dy())
+		// Center align at middle of sprite
+		op.GeoM.Translate(spriteW/2.0, 0)
+		// TODO: center align text accounting for text width
+		// textW, _ := text.Measure(txt, f, 0)
+		// Animation
+		op.GeoM.Translate(0, -(progress * spriteH / 2))
+		op.GeoM.Scale(2, 2)
+
+		PutText(panel, txt, op, NoireToColor(noire.NewRGBA(0xff, 0x00, 0x00, 0xff)), 12)
+	}
 }
 
 type Enemy struct {
 	*Sprite
-	aggroRadius          int
-	health               int
-	attackTimer          *Timer
-	movementTimer        *Timer
-	isDying              bool
-	isDead               bool
-	deathTimer           *Timer
+	aggroRadius   int
+	health        int
+	attackTimer   *Timer
+	movementTimer *Timer
+	isDying       bool
+	isDead        bool
+	deathTimer    *Timer
+	// TODO: allow multiple numbers simultaneously when multiple enemies hit player together
 	damageIndicatorTimer *Timer
 }
 
@@ -237,8 +267,11 @@ func (e *Enemy) Update(l *Level) {
 		// AOE attack in plus-shape around enemy with fixed 1 dmg
 		if d := l.Player.Pos.ManDistance(*e.Pos); d <= 1 {
 			e.attackTimer.Reset()
-			// TODO: start a text anim here for damage numbers
-			l.Player.health -= 1
+			// TODO: this should be set as 'payload' in timer? so damage number text uses correct value always
+			dmg := 1
+			l.Player.health -= dmg
+			// TODO: these values should be controlled fully within Enemy
+			l.Player.damageIndicatorTimer = NewTimer(time.Millisecond*300, false)
 		}
 	}
 }
@@ -280,7 +313,7 @@ func (e *Enemy) Draw(panel *Panel) {
 	panel.Screen.DrawImage(e.Img, op)
 
 	if e.damageIndicatorTimer != nil {
-		p := e.damageIndicatorTimer.CurrentProgress()
+		progress := e.damageIndicatorTimer.CurrentProgress()
 		txt := "1"
 		op := &text.DrawOptions{}
 		// Account for panel offset
@@ -292,7 +325,7 @@ func (e *Enemy) Draw(panel *Panel) {
 		// TODO: center align text accounting for text width
 		// textW, _ := text.Measure(txt, f, 0)
 		// Animation
-		op.GeoM.Translate(0, -(p * spriteH / 2))
+		op.GeoM.Translate(0, -(progress * spriteH / 2))
 		op.GeoM.Scale(2, 2)
 
 		PutText(panel, txt, op, NoireToColor(noire.NewRGBA(0xff, 0x00, 0x00, 0xff)), 12)

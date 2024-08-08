@@ -8,6 +8,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	"github.com/teacat/noire"
 
 	"github.com/Rabeez/rogue/assets"
@@ -85,8 +86,11 @@ func (p *Player) Update(l *Level) {
 			// AOE attack in plus-shape around player with fixed 1 dmg
 			for _, e := range l.Enemies {
 				if d := p.Pos.ManDistance(*e.Pos); d <= 1 {
-					e.health -= 1
-					// TODO: start a text anim here for damage numbers
+					// TODO: this should be set as 'payload' in timer? so damage number text uses correct value always
+					dmg := 1
+					e.health -= dmg
+					// TODO: these values should be controlled fully within Enemy
+					e.damageIndicatorTimer = NewTimer(time.Millisecond*300, false)
 					if e.health <= 0 {
 						e.isDying = true
 					}
@@ -160,13 +164,14 @@ func (p *Player) Draw(panel *Panel) {
 
 type Enemy struct {
 	*Sprite
-	aggroRadius   int
-	health        int
-	attackTimer   *Timer
-	movementTimer *Timer
-	isDying       bool
-	isDead        bool
-	deathTimer    *Timer
+	aggroRadius          int
+	health               int
+	attackTimer          *Timer
+	movementTimer        *Timer
+	isDying              bool
+	isDead               bool
+	deathTimer           *Timer
+	damageIndicatorTimer *Timer
 }
 
 func NewEnemy(x, y int) *Enemy {
@@ -176,13 +181,14 @@ func NewEnemy(x, y int) *Enemy {
 	}
 
 	return &Enemy{
-		aggroRadius:   ar,
-		health:        2,
-		attackTimer:   NewTimer(time.Second*1, true),
-		movementTimer: NewTimer(time.Millisecond*200, true),
-		isDying:       false,
-		isDead:        false,
-		deathTimer:    nil,
+		aggroRadius:          ar,
+		health:               2,
+		attackTimer:          NewTimer(time.Second*1, true),
+		movementTimer:        NewTimer(time.Millisecond*200, true),
+		isDying:              false,
+		isDead:               false,
+		deathTimer:           nil,
+		damageIndicatorTimer: nil,
 		Sprite: &Sprite{
 			Pos:   NewVector2(x, y),
 			color: noire.NewRGBA(0xaa, 0x20, 0x20, 0xff),
@@ -203,6 +209,13 @@ func (e *Enemy) Update(l *Level) {
 		e.deathTimer.Update()
 		if e.deathTimer.IsReady() {
 			e.isDead = true
+		}
+	}
+
+	if e.damageIndicatorTimer != nil {
+		e.damageIndicatorTimer.Update()
+		if e.damageIndicatorTimer.IsReady() {
+			e.damageIndicatorTimer = nil
 		}
 	}
 
@@ -265,6 +278,25 @@ func (e *Enemy) Draw(panel *Panel) {
 	}
 
 	panel.Screen.DrawImage(e.Img, op)
+
+	if e.damageIndicatorTimer != nil {
+		p := e.damageIndicatorTimer.CurrentProgress()
+		txt := "1"
+		op := &text.DrawOptions{}
+		// Account for panel offset
+		op.GeoM.Translate(float64(panel.Corner.X), float64(panel.Corner.Y))
+		op.GeoM.Translate(pixelX, pixelY)
+		spriteW, spriteH := float64(e.Img.Bounds().Dx()), float64(e.Img.Bounds().Dy())
+		// Center align at middle of sprite
+		op.GeoM.Translate(spriteW/2.0, 0)
+		// TODO: center align text accounting for text width
+		// textW, _ := text.Measure(txt, f, 0)
+		// Animation
+		op.GeoM.Translate(0, -(p * spriteH / 2))
+		op.GeoM.Scale(2, 2)
+
+		PutText(panel, txt, op, NoireToColor(noire.NewRGBA(0xff, 0x00, 0x00, 0xff)), 12)
+	}
 }
 
 type WallType int

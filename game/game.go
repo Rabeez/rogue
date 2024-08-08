@@ -7,6 +7,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
 const (
@@ -59,10 +60,30 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.currentLevel.Draw(gamePanel)
 
 	// Draw UI
-	PutText(interfaceLeftPanel, "hello", 0, 0, color.RGBA{200, 0, 0, 255}, 24)
-	PutText(interfaceRightPanel, "hello again", 100, 100, color.RGBA{10, 0, 100, 255}, 30)
-	PutText(interfaceRightPanel, fmt.Sprintf("Gold: %d", g.currentLevel.Player.gold), 100, 130, color.RGBA{10, 50, 100, 255}, 30)
-	PutText(interfaceRightPanel, fmt.Sprintf("Health: %d", g.currentLevel.Player.health), 100, 200, color.RGBA{100, 50, 100, 255}, 30)
+	{
+		op := &text.DrawOptions{}
+		op.GeoM.Translate(float64(interfaceLeftPanel.Corner.X), float64(interfaceLeftPanel.Corner.Y))
+		op.GeoM.Translate(0, 0)
+		PutText(interfaceLeftPanel, "hello", op, color.RGBA{200, 0, 0, 255}, 24)
+	}
+	{
+		op := &text.DrawOptions{}
+		op.GeoM.Translate(float64(interfaceRightPanel.Corner.X), float64(interfaceRightPanel.Corner.Y))
+		op.GeoM.Translate(100, 100)
+		PutText(interfaceRightPanel, "hello again", op, color.RGBA{10, 0, 100, 255}, 30)
+	}
+	{
+		op := &text.DrawOptions{}
+		op.GeoM.Translate(float64(interfaceRightPanel.Corner.X), float64(interfaceRightPanel.Corner.Y))
+		op.GeoM.Translate(100, 130)
+		PutText(interfaceRightPanel, fmt.Sprintf("Gold: %d", g.currentLevel.Player.gold), op, color.RGBA{10, 50, 100, 255}, 30)
+	}
+	{
+		op := &text.DrawOptions{}
+		op.GeoM.Translate(float64(interfaceRightPanel.Corner.X), float64(interfaceRightPanel.Corner.Y))
+		op.GeoM.Translate(100, 200)
+		PutText(interfaceRightPanel, fmt.Sprintf("Health: %d", g.currentLevel.Player.health), op, color.RGBA{100, 50, 100, 255}, 30)
+	}
 
 	// Debug info
 	ebitenutil.DebugPrint(screen, fmt.Sprintf("%.0f", ebiten.ActualTPS()))

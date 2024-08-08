@@ -2,7 +2,6 @@ package game
 
 import (
 	"image/color"
-	"log"
 	"math/rand/v2"
 
 	"github.com/Rabeez/rogue/assets"
@@ -10,21 +9,18 @@ import (
 	"github.com/teacat/noire"
 )
 
-func PutText(panel *Panel, s string, x, y float64, clr color.Color, sz float64) {
+func PutText(panel *Panel, s string, op *text.DrawOptions, clr color.Color, sz float64) {
 	f := &text.GoTextFace{
 		Source: assets.FontFaceSource,
 		Size:   sz,
 	}
-	// Detect bounds and overflow drawing
-	w, h := text.Measure(s, f, 0)
-	if x+w > float64(panel.Size.X) || y+h > float64(panel.Size.Y) {
-		log.Fatalf("Overflow drawing detected\n")
-	}
+	// TODO: redo this using values from `op` instead
+	// // Detect bounds and overflow drawing
+	// w, h := text.Measure(s, f, 0)
+	// if x+w > float64(panel.Size.X) || y+h > float64(panel.Size.Y) {
+	// 	log.Fatalf("Overflow drawing detected\n")
+	// }
 
-	op := &text.DrawOptions{}
-	// Account for panel offset
-	op.GeoM.Translate(float64(panel.Corner.X), float64(panel.Corner.Y))
-	op.GeoM.Translate(x, y)
 	op.ColorScale.ScaleWithColor(clr)
 	text.Draw(panel.Screen, s, f, op)
 }

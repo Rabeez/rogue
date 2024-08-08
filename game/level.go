@@ -1,7 +1,6 @@
 package game
 
 import (
-	"fmt"
 	"log"
 	"slices"
 	"strconv"
@@ -154,7 +153,6 @@ func (l *Level) Update() error {
 			deadThisTick = append(deadThisTick, i-len(deadThisTick))
 		}
 	}
-	fmt.Println(deadThisTick)
 	for _, i := range deadThisTick {
 		l.Enemies = slices.Delete(l.Enemies, i, i+1)
 	}
